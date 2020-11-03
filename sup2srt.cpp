@@ -1,3 +1,10 @@
+/*
+ * sup2srt.cpp
+ *
+ *  Created on: Nov 1, 2020
+ *      Author: blazer
+ */
+
 #include <iostream>
 #include <string>
 #include <boost/program_options.hpp>

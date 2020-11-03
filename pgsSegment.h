@@ -7,15 +7,13 @@
 
 #ifndef PGSSEGMENT_H_
 #define PGSSEGMENT_H_
+#include "pgsSegmentHeader.h"
 
 class pgsSegment {
 private:
-	char * PRESENTATION_TIMESTAMP = new char [4];
-	char * DECODING_TIMESTAMP = new char [4];
-	char * SEGMENT_TYPE = new char;
-	char * SEGMENT_SIZE = new char [2];
+	pgsSegmentHeader HEADER;
 public:
-	pgsSegment(char * pgs, char * dts, char * st, char * ss, char * data);
+	pgsSegment(pgsSegmentHeader header);
 	virtual ~pgsSegment();
 };
 

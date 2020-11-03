@@ -7,12 +7,11 @@
 
 #include "pgsSegment.h"
 
-pgsSegment::pgsSegment(char * pgs, char * dts, char * st, char * ss, char * data) {
-	this->PRESENTATION_TIMESTAMP = pgs;
-
-}
+pgsSegment::pgsSegment(pgsSegmentHeader header) {
+	this->HEADER = header;
+};
 
 pgsSegment::~pgsSegment() {
 	// TODO Auto-generated destructor stub
-}
+};
 

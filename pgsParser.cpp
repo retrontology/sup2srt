@@ -1,3 +1,10 @@
+/*
+ * pgsParser.cpp
+ *
+ *  Created on: Nov 1, 2020
+ *      Author: blazer
+ */
+
 #include <fstream>
 #include <bits/stdc++.h>
 #include <tesseract/baseapi.h>
@@ -6,6 +13,7 @@
 #include <stdlib.h>
 #include "pgsParser.h"
 #include "pgsSegment.h"
+#include "pgsSegmentHeader.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -33,6 +41,17 @@ pgsSegment pgsParser::parseNextSegment()
 	if (magicNumber == "PG")
 	{
 		std::cout << "MAGIC NUMBER FOUND!" << std::endl;
+		// Read Header
+		char * pts = new char [4];
+		this->pgsData.read(pts, 4);
+		char * dts = new char [4];
+		this->pgsData.read(dts, 4);
+		char * type = new char [1];
+		this->pgsData.read(type, 1);
+		char * size = new char [2];
+		this->pgsData.read(size, 2);
+		pgsSegmentHeader header = pgsSegmentHeader(pts, dts, type, size);
+		pgsSegment segment = pgsSegment(header);
 	}
 	else
 	{
