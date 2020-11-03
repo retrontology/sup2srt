@@ -6,26 +6,27 @@
  */
 
 #include "pgsSegmentHeader.h"
-#include <string>
+#include "pgsUtil.h"
 
 pgsSegmentHeader::pgsSegmentHeader(){};
 
-pgsSegmentHeader::pgsSegmentHeader(char * pgs, char * dts, char * st, char * ss) {
-	this->PRESENTATION_TIMESTAMP = std::string(pgs, 4);
-	this->DECODING_TIMESTAMP = std::string(dts, 4);
-	this->SEGMENT_TYPE = std::string(st, 1);
-	this->SEGMENT_SIZE = std::string(ss, 2);
+pgsSegmentHeader::pgsSegmentHeader(char * pts, char * dts, char * st, char * ss) {
+
+	this->PRESENTATION_TIMESTAMP = char4ToLong(pts);
+	this->DECODING_TIMESTAMP = char4ToLong(dts);
+	this->SEGMENT_TYPE = static_cast<pgsSegmentType>(st[0]);
+	this->SEGMENT_SIZE = char2ToLong(ss);
 };
 
 pgsSegmentHeader::~pgsSegmentHeader() {
 	// TODO Auto-generated destructor stub
 };
 
-std::string pgsSegmentHeader::getPTS() { return this->PRESENTATION_TIMESTAMP; }
+unsigned long int pgsSegmentHeader::getPTS() { return this->PRESENTATION_TIMESTAMP; }
 
-std::string pgsSegmentHeader::getDTS() { return this->DECODING_TIMESTAMP; }
+unsigned long int pgsSegmentHeader::getDTS() { return this->DECODING_TIMESTAMP; }
 
-std::string pgsSegmentHeader::getType() { return this->SEGMENT_TYPE; }
+pgsSegmentType pgsSegmentHeader::getType() { return this->SEGMENT_TYPE; }
 
-std::string pgsSegmentHeader::getSize() { return this->SEGMENT_SIZE; }
+unsigned int pgsSegmentHeader::getSize() { return this->SEGMENT_SIZE; }
 

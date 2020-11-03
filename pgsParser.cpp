@@ -14,6 +14,7 @@
 #include "pgsParser.h"
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"
+#include "presentationCompositionSegment.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -31,6 +32,7 @@ pgsParser::~pgsParser()
 void pgsParser::open(std::string filename)
 {
 	this->pgsData.open(filename, std::ifstream::binary);
+	this->parseNextSegment();
 };
 
 pgsSegment pgsParser::parseNextSegment()
@@ -51,7 +53,34 @@ pgsSegment pgsParser::parseNextSegment()
 		char * size = new char [2];
 		this->pgsData.read(size, 2);
 		pgsSegmentHeader header = pgsSegmentHeader(pts, dts, type, size);
+
+		std::cout << "PTS: " << header.getPTS() << std::endl;
+		std::cout << "DTS: " << header.getDTS() << std::endl;
+		std::cout << "Type: " << header.getType() << std::endl;
+		std::cout << "Size: " << header.getSize() << std::endl;
+
+		// Segment Type
+		switch (header.getType())
+		{
+			case PDS :
+				//statements;
+				break;
+			case ODS :
+				//statements;
+				break;
+			case PCS :
+				//statements;
+				break;
+			case WDS :
+				//statements;
+				break;
+			case END :
+				//statements;
+				break;
+		}
 		pgsSegment segment = pgsSegment(header);
+		return segment;
+
 	}
 	else
 	{

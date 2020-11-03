@@ -11,6 +11,11 @@ pgsSegment::pgsSegment(pgsSegmentHeader header) {
 	this->HEADER = header;
 };
 
+pgsSegment::pgsSegment()
+{
+	// TODO ur mum
+};
+
 pgsSegment::~pgsSegment() {
 	// TODO Auto-generated destructor stub
 };

@@ -14,6 +14,7 @@ private:
 	pgsSegmentHeader HEADER;
 public:
 	pgsSegment(pgsSegmentHeader header);
+	pgsSegment();
 	virtual ~pgsSegment();
 };
 
