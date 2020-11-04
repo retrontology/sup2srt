@@ -17,6 +17,8 @@
 #include "pgsSegmentHeader.h"
 #include "presentationCompositionSegment.h"
 #include "compositionObject.h"
+#include "windowDefinitionSegment.h";
+#include "windowSegment.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -42,6 +44,7 @@ pgsSegment pgsParser::parseNextSegment()
 	char * buffer = new char [13];
 	this->pgsData.read(buffer, 13);
 	pgsSegmentHeader header = this->parseHeader(buffer);
+	pgsSegment segment;
 	// Segment Type
 	switch (header.SEGMENT_TYPE)
 	{
@@ -57,19 +60,18 @@ pgsSegment pgsParser::parseNextSegment()
 		}
 		case PCS :
 		{
-			char * buffer = new char [11];
-			this->pgsData.read(buffer, 11);
-			presentationCompositionSegment pcs = this->parsePCS(buffer);
+			segment = this->parsePCS();
 			break;
 		}
 		case WDS :
 		{
-			//statements;
+			segment = this->parseWDS();
 			break;
 		}
 		case END :
 		{
-			//statements;
+			std::cout << "Reached end of stream :D" << std::endl;
+			segment = pgsSegment();
 			break;
 		}
 		case ERR :
@@ -79,7 +81,7 @@ pgsSegment pgsParser::parseNextSegment()
 			break;
 		}
 	}
-	pgsSegment segment = pgsSegment(header);
+	segment.HEADER = header;
 	return segment;
 
 };
@@ -104,8 +106,10 @@ pgsSegmentHeader pgsParser::parseHeader(char * head)
 
 }
 
-presentationCompositionSegment pgsParser::parsePCS(char * buffer)
+presentationCompositionSegment pgsParser::parsePCS()
 {
+	char * buffer = new char [11];
+	this->pgsData.read(buffer, 11);
 	char * width = pgsUtil::subArray(buffer, 2);
 	char * height = pgsUtil::subArray(buffer, 2, 2);
 	char * framerate = pgsUtil::subArray(buffer, 1, 4);
@@ -142,6 +146,27 @@ presentationCompositionSegment pgsParser::parsePCS(char * buffer)
 		else{ compObjects[i] = compositionObject(objID, windowID, objCropFlag, objXPos, objYPos); }
 	}
 	return presentationCompositionSegment(width, height, framerate, compNumber, compState, paletteUpdateFlag, paletteID, compObjectCount, compObjects);
+}
+
+windowDefinitionSegment pgsParser::parseWDS()
+{
+	char * buffer = new char [1];
+	this->pgsData.read(buffer, 1);
+	char * numOfWindows = pgsUtil::subArray(buffer, 1);
+	unsigned int count = pgsUtil::cleanChar(numOfWindows[0]);
+	windowSegment * windowSegments = new windowSegment[count];
+	for(int i = 0; i < count; i++)
+	{
+		char * windowBuffer = new char [10];
+		this->pgsData.read(buffer, 10);
+		char * windowID = pgsUtil::subArray(buffer, 1, 1);
+		char * windowXPos = pgsUtil::subArray(buffer, 2, 2);
+		char * windowYPos = pgsUtil::subArray(buffer, 2, 4);
+		char * windowWidth = pgsUtil::subArray(buffer, 2, 6);
+		char * windowHeight = pgsUtil::subArray(buffer, 2, 8);
+		windowSegments[i] = windowSegment(windowID, windowXPos, windowYPos, windowWidth, windowHeight);
+	}
+	return windowDefinitionSegment(numOfWindows, windowSegments);
 }
 
 std::map<int, pgsSegment> pgsParser::parseAllSegments()

@@ -13,6 +13,7 @@
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"
 #include "presentationCompositionSegment.h"
+#include "windowDefinitionSegment.h"
 
 class pgsParser
 {
@@ -27,7 +28,9 @@ class pgsParser
 		pgsSegmentHeader parseHeader(char * head);
 		std::map<int, pgsSegment> parseAllSegments();
 		pgsSegment parseNextSegment();
-		presentationCompositionSegment parsePCS(char * buffer);
+		presentationCompositionSegment parsePCS();
+		windowDefinitionSegment parseWDS();
+
 };
 
 #endif /* PGSPARSER_H_ */
