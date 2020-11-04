@@ -18,14 +18,14 @@ class pgsParser
 {
 	private:
 		std::ifstream pgsData;
-        pgsSegment * PGS_SEGMENTS;
+		std::map<int, pgsSegment>  PGS_SEGMENTS;
 	public:
         pgsParser();
 		pgsParser(std::string filename);
 		virtual ~pgsParser();
 		void open(std::string filename);
 		pgsSegmentHeader parseHeader(char * head);
-		pgsSegment * parseAllSegments();
+		std::map<int, pgsSegment> parseAllSegments();
 		pgsSegment parseNextSegment();
 		presentationCompositionSegment parsePCS(char * buffer);
 };

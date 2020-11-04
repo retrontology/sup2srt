@@ -144,11 +144,14 @@ presentationCompositionSegment pgsParser::parsePCS(char * buffer)
 	return presentationCompositionSegment(width, height, framerate, compNumber, compState, paletteUpdateFlag, paletteID, compObjectCount, compObjects);
 }
 
-pgsSegment * pgsParser::parseAllSegments()
+std::map<int, pgsSegment> pgsParser::parseAllSegments()
 {
+	int count = 0;
 	while (!this->pgsData.eof())
 	{
-		this->parseNextSegment();
+		this->PGS_SEGMENTS[count] = this->parseNextSegment();
 		this->pgsData.peek();
+		count++;
 	}
+	return this->PGS_SEGMENTS;
 };
