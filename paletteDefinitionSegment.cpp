@@ -6,10 +6,15 @@
  */
 
 #include "paletteDefinitionSegment.h"
+#include "pgsUtil.h"
+#include "paletteSegment.h"
 
-paletteDefinitionSegment::paletteDefinitionSegment() {
-	// TODO Auto-generated constructor stub
-
+paletteDefinitionSegment::paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCount)
+{
+	this->paletteID = pgsUtil::cleanChar(paletteID[0]);
+	this->paletteVersionNumber = pgsUtil::cleanChar(paletteVersionNumber[0]);
+	this->paletteSegments = paletteSegments;
+	this->paletteCount = paletteCount;
 }
 
 paletteDefinitionSegment::~paletteDefinitionSegment() {

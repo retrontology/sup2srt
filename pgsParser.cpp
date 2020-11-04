@@ -19,6 +19,7 @@
 #include "compositionObject.h"
 #include "windowDefinitionSegment.h";
 #include "windowSegment.h"
+#include "paletteDefinitionSegment.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -50,7 +51,9 @@ pgsSegment pgsParser::parseNextSegment()
 	{
 		case PDS :
 		{
-			//statements;
+			char * buffer = new char[header.SEGMENT_SIZE];
+			this->pgsData.read(buffer, header.SEGMENT_SIZE);
+			segment = this->parsePDS(buffer, header.SEGMENT_SIZE);
 			break;
 		}
 		case ODS :
@@ -167,6 +170,24 @@ windowDefinitionSegment pgsParser::parseWDS()
 		windowSegments[i] = windowSegment(windowID, windowXPos, windowYPos, windowWidth, windowHeight);
 	}
 	return windowDefinitionSegment(numOfWindows, windowSegments);
+}
+
+paletteDefinitionSegment pgsParser::parsePDS(char * buffer, unsigned int segmentSize)
+{
+	unsigned int segmentCount = (segmentSize - 2) / 5;
+	char * paletteID = pgsUtil::subArray(buffer, 1);
+	char * paletteVersionNumber = pgsUtil::subArray(buffer, 1, 1);
+	paletteSegment * paletteSegments = new paletteSegment[segmentCount];
+	for(int i = 0; i < segmentCount; i++)
+	{
+		char * paletteEntryID = pgsUtil::subArray(buffer, 1, 2+5*i);
+		char * luminance = pgsUtil::subArray(buffer, 1, 3+5*i);
+		char * colorDiffRed = pgsUtil::subArray(buffer, 1, 4+5*i);
+		char * colorDiffBlue = pgsUtil::subArray(buffer, 1, 5+5*i);
+		char * transparency = pgsUtil::subArray(buffer, 1, 6+5*i);
+		paletteSegments[i] = paletteSegment(paletteEntryID, luminance, colorDiffRed, colorDiffBlue, transparency);
+	}
+	return paletteDefinitionSegment(paletteID, paletteVersionNumber, paletteSegments, segmentCount);
 }
 
 std::map<int, pgsSegment> pgsParser::parseAllSegments()
