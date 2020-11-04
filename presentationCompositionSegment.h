@@ -9,10 +9,20 @@
 #define PRESENTATIONCOMPOSITIONSEGMENT_H_
 
 #include "pgsSegment.h"
+#include "compositionObject.h"
 
 class presentationCompositionSegment: public pgsSegment {
 public:
-	presentationCompositionSegment();
+	unsigned int width;
+	unsigned int height;
+	unsigned char framerate;
+	unsigned int compNumber;
+	unsigned char compState;
+	unsigned char paletteUpdateFlag;
+	unsigned char paletteID;
+	unsigned char compObjectCount;
+	compositionObject * compObjects;
+	presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects);
 	virtual ~presentationCompositionSegment();
 };
 

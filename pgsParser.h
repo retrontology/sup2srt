@@ -12,6 +12,7 @@
 #include <fstream>
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"
+#include "presentationCompositionSegment.h"
 
 class pgsParser
 {
@@ -26,6 +27,7 @@ class pgsParser
 		pgsSegmentHeader parseHeader(char * head);
 		pgsSegment * parseAllSegments();
 		pgsSegment parseNextSegment();
+		presentationCompositionSegment parsePCS(char * buffer);
 };
 
 #endif /* PGSPARSER_H_ */

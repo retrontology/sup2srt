@@ -10,7 +10,7 @@
 namespace pgsUtil
 {
 unsigned long int char4ToLong(char * ptr);
-unsigned int char2ToLong(char * ptr);
+unsigned int char2ToInt(char * ptr);
 unsigned char cleanChar(char in);
 char * subArray(char * ptr, int length, int start = 0);
 }

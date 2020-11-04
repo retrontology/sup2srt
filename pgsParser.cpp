@@ -41,49 +41,54 @@ pgsSegment pgsParser::parseNextSegment()
 	char * buffer = new char [13];
 	this->pgsData.read(buffer, 13);
 	pgsSegmentHeader header = this->parseHeader(buffer);
-	if(header.getType() != ERR)
+	// Segment Type
+	switch (header.SEGMENT_TYPE)
 	{
-		std::cout << "PTS: " << header.getPTS() << std::endl;
-		std::cout << "DTS: " << header.getDTS() << std::endl;
-		std::cout << "Type: " << header.getType() << std::endl;
-		std::cout << "Size: " << header.getSize() << std::endl;
-
-		// Segment Type
-		switch (header.getType())
+		case PDS :
 		{
-			case PDS :
-				//statements;
-				break;
-			case ODS :
-				//statements;
-				break;
-			case PCS :
-				//statements;
-				break;
-			case WDS :
-				//statements;
-				break;
-			case END :
-				//statements;
-				break;
+			//statements;
+			break;
 		}
-		pgsSegment segment = pgsSegment(header);
-		return segment;
+		case ODS :
+		{
+			//statements;
+			break;
+		}
+		case PCS :
+		{
+			char * buffer = new char [11];
+			this->pgsData.read(buffer, 11);
+			presentationCompositionSegment pcs = this->parsePCS(buffer);
+			break;
+		}
+		case WDS :
+		{
+			//statements;
+			break;
+		}
+		case END :
+		{
+			//statements;
+			break;
+		}
+		case ERR :
+		{
+			std::cout << "Failed to find magic number. Either stream is corrupt or you dun fukt up son :|" << std::endl;
+			exit (EXIT_FAILURE);
+			break;
+		}
+	}
+	pgsSegment segment = pgsSegment(header);
+	return segment;
 
-	}
-	else
-	{
-		std::cout << "Failed to find magic number. Either stream is corrupt or you dun fukt up son :|" << std::endl;
-		exit (EXIT_FAILURE);
-	}
 };
 
 pgsSegmentHeader pgsParser::parseHeader(char * head)
 {
+	// Check for magic number
 	std::string magicNumber (pgsUtil::subArray(head, 2));
 	if (magicNumber == "PG")
 	{
-		std::cout << "MAGIC NUMBER FOUND!" << std::endl;
 		// Read Header
 		char * pts = pgsUtil::subArray(head, 4, 2);
 		char * dts = pgsUtil::subArray(head, 4, 6);
@@ -95,6 +100,11 @@ pgsSegmentHeader pgsParser::parseHeader(char * head)
 	{
 		return pgsSegmentHeader();
 	}
+
+}
+
+presentationCompositionSegment pgsParser::parsePCS(char * buffer)
+{
 
 }
 

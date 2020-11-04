@@ -21,19 +21,14 @@ enum pgsSegmentType
 };
 
 class pgsSegmentHeader {
-private:
-	unsigned long int PRESENTATION_TIMESTAMP;
-	unsigned long int DECODING_TIMESTAMP;
-	pgsSegmentType SEGMENT_TYPE;
-	unsigned int SEGMENT_SIZE;
 public:
 	pgsSegmentHeader();
 	pgsSegmentHeader(char * pgs, char * dts, char * st, char * ss);
 	virtual ~pgsSegmentHeader();
-	unsigned long int getPTS();
-	unsigned long int getDTS();
-	pgsSegmentType getType();
-	unsigned int getSize();
+	unsigned long int PRESENTATION_TIMESTAMP;
+	unsigned long int DECODING_TIMESTAMP;
+	pgsSegmentType SEGMENT_TYPE;
+	unsigned int SEGMENT_SIZE;
 };
 
 #endif /* PGSSEGMENTHEADER_H_ */
