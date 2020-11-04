@@ -22,7 +22,7 @@ public:
 	unsigned char paletteID;
 	unsigned char compObjectCount;
 	compositionObject * compObjects;
-	presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects);
+	presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects);
 	virtual ~presentationCompositionSegment();
 };
 

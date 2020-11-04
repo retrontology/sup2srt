@@ -21,6 +21,7 @@ public:
 	unsigned int objectCropHeight;
 	compositionObject();
 	compositionObject(char * objectID, char * windowID, char * objectCroppedFlag, char * objectXPos, char * objectYPos, char * objectCropXPos, char * objectCropYPos, char * objectCropWidth, char * objectCropHeight);
+	compositionObject(char * objectID, char * windowID, char * objectCroppedFlag, char * objectXPos, char * objectYPos);
 	virtual ~compositionObject();
 };
 
