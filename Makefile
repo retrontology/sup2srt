@@ -27,4 +27,4 @@ sup2srt:	$(OBJS)
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 clean:
-	rm -fr sup2srt $(OBJS)
+	rm -fr sup2srt $(OBJS) build

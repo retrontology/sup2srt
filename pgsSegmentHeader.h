@@ -16,7 +16,8 @@ enum pgsSegmentType
 	ODS = 0x15,
 	PCS = 0x16,
 	WDS = 0x17,
-	END = 0x80
+	END = 0x80,
+	ERR = 0x00
 };
 
 class pgsSegmentHeader {

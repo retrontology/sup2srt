@@ -11,6 +11,7 @@
 #include <libavcodec/avcodec.h>
 #include <string>
 #include <stdlib.h>
+#include "pgsUtil.h"
 #include "pgsParser.h"
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"
@@ -37,23 +38,11 @@ void pgsParser::open(std::string filename)
 
 pgsSegment pgsParser::parseNextSegment()
 {
-	char * buffer = new char [2];
-	this->pgsData.read(buffer, 2);
-	std::string magicNumber (buffer);
-	if (magicNumber == "PG")
+	char * buffer = new char [13];
+	this->pgsData.read(buffer, 13);
+	pgsSegmentHeader header = this->parseHeader(buffer);
+	if(header.getType() != ERR)
 	{
-		std::cout << "MAGIC NUMBER FOUND!" << std::endl;
-		// Read Header
-		char * pts = new char [4];
-		this->pgsData.read(pts, 4);
-		char * dts = new char [4];
-		this->pgsData.read(dts, 4);
-		char * type = new char [1];
-		this->pgsData.read(type, 1);
-		char * size = new char [2];
-		this->pgsData.read(size, 2);
-		pgsSegmentHeader header = pgsSegmentHeader(pts, dts, type, size);
-
 		std::cout << "PTS: " << header.getPTS() << std::endl;
 		std::cout << "DTS: " << header.getDTS() << std::endl;
 		std::cout << "Type: " << header.getType() << std::endl;
@@ -88,6 +77,26 @@ pgsSegment pgsParser::parseNextSegment()
 		exit (EXIT_FAILURE);
 	}
 };
+
+pgsSegmentHeader pgsParser::parseHeader(char * head)
+{
+	std::string magicNumber (pgsUtil::subArray(head, 2));
+	if (magicNumber == "PG")
+	{
+		std::cout << "MAGIC NUMBER FOUND!" << std::endl;
+		// Read Header
+		char * pts = pgsUtil::subArray(head, 4, 2);
+		char * dts = pgsUtil::subArray(head, 4, 6);
+		char * type = pgsUtil::subArray(head, 1, 10);
+		char * size = pgsUtil::subArray(head, 2, 11);
+		return pgsSegmentHeader(pts, dts, type, size);
+	}
+	else
+	{
+		return pgsSegmentHeader();
+	}
+
+}
 
 pgsSegment * pgsParser::parseAllSegments()
 {

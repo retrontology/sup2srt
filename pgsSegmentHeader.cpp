@@ -8,14 +8,20 @@
 #include "pgsSegmentHeader.h"
 #include "pgsUtil.h"
 
-pgsSegmentHeader::pgsSegmentHeader(){};
+pgsSegmentHeader::pgsSegmentHeader()
+{
+	this->PRESENTATION_TIMESTAMP = 0;
+	this->DECODING_TIMESTAMP = 0;
+	this->SEGMENT_TYPE = ERR;
+	this->SEGMENT_SIZE = 0;
+};
 
 pgsSegmentHeader::pgsSegmentHeader(char * pts, char * dts, char * st, char * ss) {
 
-	this->PRESENTATION_TIMESTAMP = char4ToLong(pts);
-	this->DECODING_TIMESTAMP = char4ToLong(dts);
+	this->PRESENTATION_TIMESTAMP = pgsUtil::char4ToLong(pts);
+	this->DECODING_TIMESTAMP = pgsUtil::char4ToLong(dts);
 	this->SEGMENT_TYPE = static_cast<pgsSegmentType>(st[0]);
-	this->SEGMENT_SIZE = char2ToLong(ss);
+	this->SEGMENT_SIZE = pgsUtil::char2ToLong(ss);
 };
 
 pgsSegmentHeader::~pgsSegmentHeader() {

@@ -11,6 +11,7 @@
 #include <string>
 #include <fstream>
 #include "pgsSegment.h"
+#include "pgsSegmentHeader.h"
 
 class pgsParser
 {
@@ -22,6 +23,7 @@ class pgsParser
 		pgsParser(std::string filename);
 		virtual ~pgsParser();
 		void open(std::string filename);
+		pgsSegmentHeader parseHeader(char * head);
 		pgsSegment * parseAllSegments();
 		pgsSegment parseNextSegment();
 };
