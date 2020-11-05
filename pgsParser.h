@@ -15,6 +15,8 @@
 #include "presentationCompositionSegment.h"
 #include "windowDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
+#include "objectDefinitionSegment.h"
+#include "objectData.h"
 
 class pgsParser
 {
@@ -32,6 +34,7 @@ class pgsParser
 		presentationCompositionSegment parsePCS();
 		windowDefinitionSegment parseWDS();
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
+		objectDefinitionSegment parseODS(char * buffer, unsigned long segmentSize);
 };
 
 #endif /* PGSPARSER_H_ */

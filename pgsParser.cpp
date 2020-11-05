@@ -17,9 +17,11 @@
 #include "pgsSegmentHeader.h"
 #include "presentationCompositionSegment.h"
 #include "compositionObject.h"
-#include "windowDefinitionSegment.h";
+#include "windowDefinitionSegment.h"
 #include "windowSegment.h"
 #include "paletteDefinitionSegment.h"
+#include "objectDefinitionSegment.h"
+#include "objectData.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -46,19 +48,19 @@ pgsSegment pgsParser::parseNextSegment()
 	this->pgsData.read(buffer, 13);
 	pgsSegmentHeader header = this->parseHeader(buffer);
 	pgsSegment segment;
+	buffer = new char[header.SEGMENT_SIZE];
+	this->pgsData.read(buffer, header.SEGMENT_SIZE);
 	// Segment Type
 	switch (header.SEGMENT_TYPE)
 	{
 		case PDS :
 		{
-			char * buffer = new char[header.SEGMENT_SIZE];
-			this->pgsData.read(buffer, header.SEGMENT_SIZE);
 			segment = this->parsePDS(buffer, header.SEGMENT_SIZE);
 			break;
 		}
 		case ODS :
 		{
-			//statements;
+			segment = this->parseODS(buffer, header.SEGMENT_SIZE);
 			break;
 		}
 		case PCS :
@@ -189,6 +191,19 @@ paletteDefinitionSegment pgsParser::parsePDS(char * buffer, unsigned int segment
 	}
 	return paletteDefinitionSegment(paletteID, paletteVersionNumber, paletteSegments, segmentCount);
 }
+
+objectDefinitionSegment pgsParser::parseODS(char * buffer, unsigned long segmentSize)
+{
+	char * objectID = pgsUtil::subArray(buffer, 2);
+	char * objectVersionNumber = pgsUtil::subArray(buffer, 1, 2);
+	char * lastInSequenceFlag = pgsUtil::subArray(buffer, 1, 3);
+	char * objectDataLength = pgsUtil::subArray(buffer, 3, 4);
+	char * width = pgsUtil::subArray(buffer, 2, 7);
+	char * height = pgsUtil::subArray(buffer, 2, 9);
+	char * data = pgsUtil::subArray(buffer, 11, pgsUtil::char3ToLong(objectDataLength));
+	return objectDefinitionSegment(objectID, objectVersionNumber, lastInSequenceFlag, objectDataLength, width, height, data);
+}
+
 
 std::map<int, pgsSegment> pgsParser::parseAllSegments()
 {
