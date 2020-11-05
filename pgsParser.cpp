@@ -74,7 +74,6 @@ pgsSegment pgsParser::parseNextSegment()
 		}
 		case END :
 		{
-			std::cout << "Reached end of stream :D" << std::endl;
 			segment = pgsSegment();
 			break;
 		}
@@ -201,7 +200,6 @@ std::map<int, pgsSegment> pgsParser::parseAllSegments()
 	while (!this->pgsData.eof())
 	{
 		this->PGS_SEGMENTS[count] = this->parseNextSegment();
-		if(PGS_SEGMENTS[count].HEADER.SEGMENT_TYPE == END) { break; }
 		this->pgsData.peek();
 		count++;
 	}

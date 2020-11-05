@@ -20,7 +20,7 @@ pgsSegmentHeader::pgsSegmentHeader(char * pts, char * dts, char * st, char * ss)
 {
 	this->PRESENTATION_TIMESTAMP = pgsUtil::char4ToLong(pts);
 	this->DECODING_TIMESTAMP = pgsUtil::char4ToLong(dts);
-	this->SEGMENT_TYPE = static_cast<pgsSegmentType>(st[0]);
+	this->SEGMENT_TYPE = static_cast<pgsSegmentType>(pgsUtil::cleanChar(st[0]));
 	this->SEGMENT_SIZE = pgsUtil::char2ToInt(ss);
 };
 
