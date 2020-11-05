@@ -28,11 +28,11 @@ class pgsParser
 		pgsParser(std::string filename);
 		virtual ~pgsParser();
 		void open(std::string filename);
-		pgsSegmentHeader parseHeader(char * head);
+		pgsSegmentHeader parseHeader(char * buffer);
 		std::map<int, pgsSegment> parseAllSegments();
 		pgsSegment parseNextSegment();
-		presentationCompositionSegment parsePCS();
-		windowDefinitionSegment parseWDS();
+		presentationCompositionSegment parsePCS(char * buffer, unsigned int segmentSize);
+		windowDefinitionSegment parseWDS(char * buffer, unsigned int segmentSize);
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
 		objectDefinitionSegment parseODS(char * buffer, unsigned long segmentSize);
 };

@@ -39,7 +39,7 @@ pgsParser::~pgsParser()
 void pgsParser::open(std::string filename)
 {
 	this->pgsData.open(filename, std::ifstream::binary);
-	this->parseNextSegment();
+	this->parseAllSegments();
 };
 
 pgsSegment pgsParser::parseNextSegment()
@@ -49,8 +49,7 @@ pgsSegment pgsParser::parseNextSegment()
 	pgsSegmentHeader header = this->parseHeader(buffer);
 	pgsSegment segment;
 	buffer = new char[header.SEGMENT_SIZE];
-	this->pgsData.read(buffer, header.SEGMENT_SIZE);
-	// Segment Type
+	if(header.SEGMENT_SIZE > 0) { this->pgsData.read(buffer, header.SEGMENT_SIZE); }
 	switch (header.SEGMENT_TYPE)
 	{
 		case PDS :
@@ -65,12 +64,12 @@ pgsSegment pgsParser::parseNextSegment()
 		}
 		case PCS :
 		{
-			segment = this->parsePCS();
+			segment = this->parsePCS(buffer, header.SEGMENT_SIZE);
 			break;
 		}
 		case WDS :
 		{
-			segment = this->parseWDS();
+			segment = this->parseWDS(buffer, header.SEGMENT_SIZE);
 			break;
 		}
 		case END :
@@ -91,17 +90,17 @@ pgsSegment pgsParser::parseNextSegment()
 
 };
 
-pgsSegmentHeader pgsParser::parseHeader(char * head)
+pgsSegmentHeader pgsParser::parseHeader(char * buffer)
 {
 	// Check for magic number
-	std::string magicNumber (pgsUtil::subArray(head, 2));
+	std::string magicNumber (pgsUtil::subArray(buffer, 2));
 	if (magicNumber == "PG")
 	{
 		// Read Header
-		char * pts = pgsUtil::subArray(head, 4, 2);
-		char * dts = pgsUtil::subArray(head, 4, 6);
-		char * type = pgsUtil::subArray(head, 1, 10);
-		char * size = pgsUtil::subArray(head, 2, 11);
+		char * pts = pgsUtil::subArray(buffer, 4, 2);
+		char * dts = pgsUtil::subArray(buffer, 4, 6);
+		char * type = pgsUtil::subArray(buffer, 1, 10);
+		char * size = pgsUtil::subArray(buffer, 2, 11);
 		return pgsSegmentHeader(pts, dts, type, size);
 	}
 	else
@@ -111,10 +110,8 @@ pgsSegmentHeader pgsParser::parseHeader(char * head)
 
 }
 
-presentationCompositionSegment pgsParser::parsePCS()
+presentationCompositionSegment pgsParser::parsePCS(char * buffer, unsigned int segmentSize)
 {
-	char * buffer = new char [11];
-	this->pgsData.read(buffer, 11);
 	char * width = pgsUtil::subArray(buffer, 2);
 	char * height = pgsUtil::subArray(buffer, 2, 2);
 	char * framerate = pgsUtil::subArray(buffer, 1, 4);
@@ -125,50 +122,43 @@ presentationCompositionSegment pgsParser::parsePCS()
 	char * compObjectCount = pgsUtil::subArray(buffer, 1, 10);
 	unsigned int count = pgsUtil::cleanChar(compObjectCount[0]);
 	compositionObject * compObjects = new compositionObject[count];
+	unsigned int offset = 11;
 	// Parse Objects
 	for(int i = 0; i < count; i++)
 	{
 		// Read only first 4 so we know how big the object is before reading the rest
-		char * objBuffer = new char[4];
-		this->pgsData.read(objBuffer, 4);
-		char * objID = pgsUtil::subArray(objBuffer, 2);
-		char * windowID = pgsUtil::subArray(objBuffer, 1, 2);
-		char * objCropFlag = pgsUtil::subArray(objBuffer, 1, 3);
-		int nextCount = 2;
-		if(pgsUtil::cleanChar(objCropFlag[0]) == 0x40) { nextCount += 4; }
-		char * objBuffer2 = new char[nextCount];
-		this->pgsData.read(objBuffer2, nextCount);
-		char * objXPos = pgsUtil::subArray(objBuffer2, 2);
-		char * objYPos = pgsUtil::subArray(objBuffer2, 2, 2);
+		char * objID = pgsUtil::subArray(buffer, 2, offset);
+		char * windowID = pgsUtil::subArray(buffer, 1, offset+2);
+		char * objCropFlag = pgsUtil::subArray(buffer, 1, offset+3);
+		char * objXPos = pgsUtil::subArray(buffer, 2, offset+4);
+		char * objYPos = pgsUtil::subArray(buffer, 2, offset+6);
+		offset += 8;
 		if(pgsUtil::cleanChar(objCropFlag[0]) == 0x40)
 		{
-			char * objCropXPos = pgsUtil::subArray(objBuffer2, 2, 4);
-			char * objCropYPos = pgsUtil::subArray(objBuffer2, 2, 6);
-			char * objCropWidth = pgsUtil::subArray(objBuffer2, 2, 8);
-			char * objCropHeight = pgsUtil::subArray(objBuffer2, 2, 10);
+			char * objCropXPos = pgsUtil::subArray(buffer, 2, offset);
+			char * objCropYPos = pgsUtil::subArray(buffer, 2, offset+2);
+			char * objCropWidth = pgsUtil::subArray(buffer, 2, offset+4);
+			char * objCropHeight = pgsUtil::subArray(buffer, 2, offset+6);
+			offset += 8;
 			compObjects[i] = compositionObject(objID, windowID, objCropFlag, objXPos, objYPos, objCropXPos, objCropYPos, objCropWidth, objCropHeight);
 		}
-		else{ compObjects[i] = compositionObject(objID, windowID, objCropFlag, objXPos, objYPos); }
+		else { compObjects[i] = compositionObject(objID, windowID, objCropFlag, objXPos, objYPos); }
 	}
 	return presentationCompositionSegment(width, height, framerate, compNumber, compState, paletteUpdateFlag, paletteID, compObjectCount, compObjects);
 }
 
-windowDefinitionSegment pgsParser::parseWDS()
+windowDefinitionSegment pgsParser::parseWDS(char * buffer, unsigned int segmentSize)
 {
-	char * buffer = new char [1];
-	this->pgsData.read(buffer, 1);
 	char * numOfWindows = pgsUtil::subArray(buffer, 1);
 	unsigned int count = pgsUtil::cleanChar(numOfWindows[0]);
 	windowSegment * windowSegments = new windowSegment[count];
 	for(int i = 0; i < count; i++)
 	{
-		char * windowBuffer = new char [10];
-		this->pgsData.read(buffer, 10);
-		char * windowID = pgsUtil::subArray(buffer, 1, 1);
-		char * windowXPos = pgsUtil::subArray(buffer, 2, 2);
-		char * windowYPos = pgsUtil::subArray(buffer, 2, 4);
-		char * windowWidth = pgsUtil::subArray(buffer, 2, 6);
-		char * windowHeight = pgsUtil::subArray(buffer, 2, 8);
+		char * windowID = pgsUtil::subArray(buffer, 1, 1+i*9);
+		char * windowXPos = pgsUtil::subArray(buffer, 2, 1+i*9);
+		char * windowYPos = pgsUtil::subArray(buffer, 2, 1+i*9);
+		char * windowWidth = pgsUtil::subArray(buffer, 2, 1+i*9);
+		char * windowHeight = pgsUtil::subArray(buffer, 2, 1+i*9);
 		windowSegments[i] = windowSegment(windowID, windowXPos, windowYPos, windowWidth, windowHeight);
 	}
 	return windowDefinitionSegment(numOfWindows, windowSegments);
@@ -211,6 +201,7 @@ std::map<int, pgsSegment> pgsParser::parseAllSegments()
 	while (!this->pgsData.eof())
 	{
 		this->PGS_SEGMENTS[count] = this->parseNextSegment();
+		if(PGS_SEGMENTS[count].HEADER.SEGMENT_TYPE == END) { break; }
 		this->pgsData.peek();
 		count++;
 	}
