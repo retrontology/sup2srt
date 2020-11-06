@@ -189,7 +189,7 @@ objectDefinitionSegment pgsParser::parseODS(char * buffer, unsigned long segment
 	char * objectDataLength = pgsUtil::subArray(buffer, 3, 4);
 	char * width = pgsUtil::subArray(buffer, 2, 7);
 	char * height = pgsUtil::subArray(buffer, 2, 9);
-	char * data = pgsUtil::subArray(buffer, 11, pgsUtil::char3ToLong(objectDataLength));
+	char * data = pgsUtil::subArray(buffer, pgsUtil::char3ToLong(objectDataLength), 11);
 	return objectDefinitionSegment(objectID, objectVersionNumber, lastInSequenceFlag, objectDataLength, width, height, data);
 }
 
