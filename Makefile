@@ -13,6 +13,8 @@ else ifeq ($(BUILD_MODE),linuxtools)
 #    $(error Build mode $(BUILD_MODE) not supported by this Makefile)
 endif
 
+CPUS ?= $(shell sysctl -n hw.ncpu || echo 1)
+MAKEFLAGS += --jobs=8
 CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
 all:	sup2srt

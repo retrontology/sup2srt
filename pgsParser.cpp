@@ -42,39 +42,44 @@ void pgsParser::open(std::string filename)
 	this->parseAllSegments();
 };
 
-pgsSegment pgsParser::parseNextSegment()
+std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 {
 	char * buffer = new char [13];
 	this->pgsData.read(buffer, 13);
 	pgsSegmentHeader header = this->parseHeader(buffer);
-	pgsSegment segment;
+	std::unique_ptr<pgsSegment> segment;
 	buffer = new char[header.SEGMENT_SIZE];
 	if(header.SEGMENT_SIZE > 0) { this->pgsData.read(buffer, header.SEGMENT_SIZE); }
 	switch (header.SEGMENT_TYPE)
 	{
 		case PDS :
 		{
-			segment = this->parsePDS(buffer, header.SEGMENT_SIZE);
+			paletteDefinitionSegment tsegment = this->parsePDS(buffer, header.SEGMENT_SIZE);
+			segment = std::make_unique<pgsSegment>(tsegment);
 			break;
 		}
 		case ODS :
 		{
-			segment = this->parseODS(buffer, header.SEGMENT_SIZE);
+			objectDefinitionSegment tsegment = this->parseODS(buffer, header.SEGMENT_SIZE);
+			segment = std::make_unique<pgsSegment>(tsegment);
 			break;
 		}
 		case PCS :
 		{
-			segment = this->parsePCS(buffer, header.SEGMENT_SIZE);
+			presentationCompositionSegment tsegment = this->parsePCS(buffer, header.SEGMENT_SIZE);
+			segment = std::make_unique<pgsSegment>(tsegment);
 			break;
 		}
 		case WDS :
 		{
-			segment = this->parseWDS(buffer, header.SEGMENT_SIZE);
+			windowDefinitionSegment tsegment = this->parseWDS(buffer, header.SEGMENT_SIZE);
+			segment = std::make_unique<pgsSegment>(tsegment);
 			break;
 		}
 		case END :
 		{
-			segment = pgsSegment();
+			pgsSegment tsegment;
+			segment = std::make_unique<pgsSegment>(tsegment);
 			break;
 		}
 		case ERR :
@@ -84,15 +89,14 @@ pgsSegment pgsParser::parseNextSegment()
 			break;
 		}
 	}
-	segment.HEADER = header;
+	segment->HEADER = header;
 	return segment;
-
 };
 
 pgsSegmentHeader pgsParser::parseHeader(char * buffer)
 {
 	// Check for magic number
-	std::string magicNumber (pgsUtil::subArray(buffer, 2));
+	std::string magicNumber (pgsUtil::subArray(buffer, 2), 2);
 	if (magicNumber == "PG")
 	{
 		// Read Header
@@ -194,14 +198,11 @@ objectDefinitionSegment pgsParser::parseODS(char * buffer, unsigned long segment
 }
 
 
-std::map<int, pgsSegment> pgsParser::parseAllSegments()
+void pgsParser::parseAllSegments()
 {
-	int count = 0;
 	while (!this->pgsData.eof())
 	{
-		this->PGS_SEGMENTS[count] = this->parseNextSegment();
+		this->PGS_SEGMENTS.push_back(this->parseNextSegment());
 		this->pgsData.peek();
-		count++;
 	}
-	return this->PGS_SEGMENTS;
 };

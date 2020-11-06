@@ -6,7 +6,11 @@
  */
 
 #include "pgsUtil.h"
+#include "pgsSegment.h"
+#include "objectDefinitionSegment.h"
 #include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
 
 unsigned long int pgsUtil::char4ToLong(char * ptr)
 {
@@ -39,4 +43,26 @@ char * pgsUtil::subArray(char * ptr, int length, int start)
 	}
 	return temp;
 };
+
+/*
+void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment>> segments)
+{
+	system("mkdir -p img");
+	int count = 0;
+	for(int i = 0; i < segments.size(); i++)
+	{
+		pgsSegment segment = *segments[i];
+		if(segment.HEADER.SEGMENT_TYPE == ODS)
+		{
+			std::unique_ptr<bjectDefinitionSegment> segment = dynamic_cast<std::unique_ptr<bjectDefinitionSegment>>(segments[i]);
+			std::ostringstream ss;
+			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+			std::ofstream bmp("img/" + ss.str() + ".bmp");
+			bmp.write(segment->data.data, segment->data.length);
+			bmp.close();
+			count++;
+		}
+	}
+}
+*/
 

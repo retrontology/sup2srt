@@ -22,15 +22,15 @@ class pgsParser
 {
 	private:
 		std::ifstream pgsData;
-		std::map<int, pgsSegment>  PGS_SEGMENTS;
 	public:
+		std::vector<std::unique_ptr<pgsSegment>>  PGS_SEGMENTS;
         pgsParser();
 		pgsParser(std::string filename);
 		virtual ~pgsParser();
 		void open(std::string filename);
 		pgsSegmentHeader parseHeader(char * buffer);
-		std::map<int, pgsSegment> parseAllSegments();
-		pgsSegment parseNextSegment();
+		void parseAllSegments();
+		std::unique_ptr<pgsSegment> parseNextSegment();
 		presentationCompositionSegment parsePCS(char * buffer, unsigned int segmentSize);
 		windowDefinitionSegment parseWDS(char * buffer, unsigned int segmentSize);
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
