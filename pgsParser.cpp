@@ -40,6 +40,7 @@ void pgsParser::open(std::string filename)
 {
 	this->pgsData.open(filename, std::ifstream::binary);
 	this->parseAllSegments();
+	this->dumpBMPs();
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -54,32 +55,27 @@ std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 	{
 		case PDS :
 		{
-			paletteDefinitionSegment tsegment = this->parsePDS(buffer, header.SEGMENT_SIZE);
-			segment = std::make_unique<pgsSegment>(tsegment);
+			segment = std::make_unique<paletteDefinitionSegment>(this->parsePDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case ODS :
 		{
-			objectDefinitionSegment tsegment = this->parseODS(buffer, header.SEGMENT_SIZE);
-			segment = std::make_unique<pgsSegment>(tsegment);
+			segment = std::make_unique<objectDefinitionSegment>(this->parseODS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case PCS :
 		{
-			presentationCompositionSegment tsegment = this->parsePCS(buffer, header.SEGMENT_SIZE);
-			segment = std::make_unique<pgsSegment>(tsegment);
+			segment = std::make_unique<presentationCompositionSegment>(this->parsePCS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case WDS :
 		{
-			windowDefinitionSegment tsegment = this->parseWDS(buffer, header.SEGMENT_SIZE);
-			segment = std::make_unique<pgsSegment>(tsegment);
+			segment = std::make_unique<windowDefinitionSegment>(this->parseWDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case END :
 		{
-			pgsSegment tsegment;
-			segment = std::make_unique<pgsSegment>(tsegment);
+			segment = std::make_unique<pgsSegment>(pgsSegment());
 			break;
 		}
 		case ERR :
@@ -202,7 +198,27 @@ void pgsParser::parseAllSegments()
 {
 	while (!this->pgsData.eof())
 	{
-		this->PGS_SEGMENTS.push_back(this->parseNextSegment());
+		this->PGS_SEGMENTS.push_back(std::move(this->parseNextSegment()));
 		this->pgsData.peek();
+	}
+};
+
+void pgsParser::dumpBMPs()
+{
+	system("mkdir -p img");
+	int count = 0;
+	for(int i = 0; i < this->PGS_SEGMENTS.size(); i++)
+	{
+		pgsSegment segment = *this->PGS_SEGMENTS[i];
+		if(segment.HEADER.SEGMENT_TYPE == ODS)
+		{
+			objectDefinitionSegment* segment = dynamic_cast<objectDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
+			std::ostringstream ss;
+			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+			std::ofstream bmp("img/" + ss.str() + ".bmp");
+			bmp.write(segment->data.data, segment->data.length);
+			bmp.close();
+			count++;
+		}
 	}
 };

@@ -44,8 +44,8 @@ char * pgsUtil::subArray(char * ptr, int length, int start)
 	return temp;
 };
 
-/*
-void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment>> segments)
+
+/*void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment> > segments)
 {
 	system("mkdir -p img");
 	int count = 0;
@@ -54,7 +54,7 @@ void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment>> segments)
 		pgsSegment segment = *segments[i];
 		if(segment.HEADER.SEGMENT_TYPE == ODS)
 		{
-			std::unique_ptr<bjectDefinitionSegment> segment = dynamic_cast<std::unique_ptr<bjectDefinitionSegment>>(segments[i]);
+			objectDefinitionSegment* segment = dynamic_cast<objectDefinitionSegment*>(segments[i].get());
 			std::ostringstream ss;
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
 			std::ofstream bmp("img/" + ss.str() + ".bmp");
@@ -63,6 +63,6 @@ void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment>> segments)
 			count++;
 		}
 	}
-}
-*/
+}*/
+
 
