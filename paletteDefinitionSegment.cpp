@@ -8,12 +8,13 @@
 #include "paletteDefinitionSegment.h"
 #include "pgsUtil.h"
 #include "paletteSegment.h"
+#include <memory>
 
 paletteDefinitionSegment::paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCount)
 {
 	this->paletteID = pgsUtil::cleanChar(paletteID[0]);
 	this->paletteVersionNumber = pgsUtil::cleanChar(paletteVersionNumber[0]);
-	this->paletteSegments = paletteSegments;
+	this->paletteSegments = std::move(paletteSegments);
 	this->paletteCount = paletteCount;
 }
 

@@ -22,6 +22,7 @@ public:
 	unsigned char g;
 	unsigned char b;
 	unsigned char transparency;
+	unsigned int get32BitPixel();
 	paletteSegment();
 	paletteSegment(char * paletteEntryID, char * luminance, char * colorDiffRed, char * colorDiffBlue, char * transparency);
 	virtual ~paletteSegment();

@@ -58,3 +58,8 @@ unsigned char paletteSegment::calcBlue(unsigned char Y, unsigned char Cb, unsign
 	return b;
 }
 
+unsigned int paletteSegment::get32BitPixel()
+{
+	return 0;
+}
+
