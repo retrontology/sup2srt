@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-OBJS = pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o
+OBJS = bitmap.o #bitmapFileHeader.o  bitmapDIBHeader.o
 
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
@@ -17,7 +17,7 @@ endif
 
 all:	$(OBJS)
 
-libpgs.so:	$(OBJS)
+libbmp.so:	$(OBJS)
 	$(CXX) -shared -o $@ $(OBJS)
 
 %.o:	$(PROJECT_ROOT)%.cpp
@@ -27,4 +27,4 @@ libpgs.so:	$(OBJS)
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 clean:
-	rm -fr $(OBJS) libpgs.so
+	rm -fr $(OBJS) libbitmap.so
