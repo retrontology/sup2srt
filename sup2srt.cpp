@@ -16,7 +16,5 @@ int main(int argc, char** argv)
 {
 	std::string filename = argv[1];
 	pgsParser pgsp(filename);
-	//pgsUtil::dumpBMPs(pgsp.PGS_SEGMENTS);
-	//std::cout << filename << std::endl;
     return 0;
 }

@@ -45,24 +45,3 @@ char * pgsUtil::subArray(char * ptr, int length, int start)
 };
 
 
-/*void pgsUtil::dumpBMPs(std::vector<std::unique_ptr<pgsSegment> > segments)
-{
-	system("mkdir -p img");
-	int count = 0;
-	for(int i = 0; i < segments.size(); i++)
-	{
-		pgsSegment segment = *segments[i];
-		if(segment.HEADER.SEGMENT_TYPE == ODS)
-		{
-			objectDefinitionSegment* segment = dynamic_cast<objectDefinitionSegment*>(segments[i].get());
-			std::ostringstream ss;
-			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
-			std::ofstream bmp("img/" + ss.str() + ".bmp");
-			bmp.write(segment->data.data, segment->data.length);
-			bmp.close();
-			count++;
-		}
-	}
-}*/
-
-

@@ -18,7 +18,6 @@ namespace pgsUtil
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
 	char * subArray(char * ptr, int length, int start = 0);
-	//void dumpBMPs(std::vector<std::unique_ptr<pgsSegment> > segments);
 }
 
 
