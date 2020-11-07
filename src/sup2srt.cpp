@@ -8,8 +8,8 @@
 #include <iostream>
 #include <string>
 #include <boost/program_options.hpp>
-#include "pgsUtil.h"
-#include "pgsParser.h"
+#include "pgs/pgsUtil.h"
+#include "pgs/pgsParser.h"
 
 
 int main(int argc, char** argv)

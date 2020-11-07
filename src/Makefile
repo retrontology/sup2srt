@@ -1,5 +1,8 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+OBJS = sup2srt.o
+SHARED_OBJS = pgs/libpgs.so
+
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
 else ifeq ($(BUILD_MODE),run)
@@ -11,14 +14,22 @@ else ifeq ($(BUILD_MODE),linuxtools)
 #    $(error Build mode $(BUILD_MODE) not supported by this Makefile)
 endif
 
-MAKEFLAGS += --jobs=8
-CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+LDFLAGS := -I pgs -L pgs
 
 all:	sup2srt
 
-sup2srt:
-	$(MAKE) -C src
+sup2srt:	$(SHARED_OBJS) $(OBJS)
+	$(CXX) $(LDFLAGS) sup2srt.o -o ../$@ -lpgs
 	
+%.o:	$(PROJECT_ROOT)%.cpp
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< -lpgs
+
+%.o:	$(PROJECT_ROOT)%.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+pgs/libpgs.so:
+	$(MAKE) -C pgs
+
 clean:
-	$(MAKE) -C src clean
-	rm -f sup2srt
+	$(MAKE) -C pgs clean
+	rm -fr sup2srt $(OBJS)
