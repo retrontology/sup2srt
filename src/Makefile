@@ -2,7 +2,7 @@ PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 OBJS = sup2srt.o 
 PGSOBJS = $(patsubst %.o,pgs/%.o,pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o)
-BMPOBJS = $(patsubst %.o,bmp/%.o,bitmap.o)
+BMPOBJS = $(patsubst %.o,bmp/%.o,bitmap.o bitmapFileHeader.o  bitmapDIBHeader.o bitmapColorTable.o)
 SHARED_OBJS = pgs/libpgs.so bmp/libbmp.so
 
 ifeq ($(BUILD_MODE),debug)
@@ -37,4 +37,5 @@ bmp/libbmp.so:
 	
 clean:
 	$(MAKE) -C pgs clean
+	$(MAKE) -C bmp clean
 	rm -fr sup2srt $(OBJS)

@@ -58,8 +58,13 @@ unsigned char paletteSegment::calcBlue(unsigned char Y, unsigned char Cb, unsign
 	return b;
 }
 
-unsigned int paletteSegment::get32BitPixel()
+unsigned long paletteSegment::getRGBA()
 {
-	return 0;
+	return this->transparency | this->b << 8 | this->g << 16 | this->r << 24;
+}
+
+unsigned long paletteSegment::getARGB()
+{
+	return this->b | this->g << 8 | this->r << 16 | this->transparency << 24;
 }
 

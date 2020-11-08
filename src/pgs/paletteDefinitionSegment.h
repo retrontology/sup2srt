@@ -9,6 +9,7 @@
 #define PALETTEDEFINITIONSEGMENT_H_
 #include "pgsSegment.h"
 #include "paletteSegment.h"
+#include "../bmp/bitmapColorTable.h"
 
 class paletteDefinitionSegment: public pgsSegment {
 public:
@@ -18,6 +19,7 @@ public:
 	paletteSegment * paletteSegments;
 	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCoun);
 	virtual ~paletteDefinitionSegment();
+	bitmapColorTable getColorTable();
 };
 
 #endif /* PALETTEDEFINITIONSEGMENT_H_ */

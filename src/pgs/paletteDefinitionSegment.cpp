@@ -22,3 +22,10 @@ paletteDefinitionSegment::~paletteDefinitionSegment() {
 	// TODO Auto-generated destructor stub
 }
 
+bitmapColorTable paletteDefinitionSegment::getColorTable()
+{
+	unsigned long * colors = new unsigned long[this->paletteCount];
+	for(int i = 0; i < this->paletteCount; i++) { colors[i] = this->paletteSegments[i].getRGBA(); }
+	return bitmapColorTable(colors, this->paletteCount);
+}
+
