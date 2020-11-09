@@ -26,7 +26,6 @@
 pgsParser::pgsParser(std::string filename)
 {
 	this->open(filename);
-
 };
 
 pgsParser::pgsParser(){};
@@ -40,7 +39,7 @@ void pgsParser::open(std::string filename)
 {
 	this->pgsData.open(filename, std::ifstream::binary);
 	this->parseAllSegments();
-	this->dumpBMPs();
+	//this->dumpBMPs();
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -55,26 +54,32 @@ std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 	{
 		case PDS :
 		{
+			std::cout << "PDS" << std::endl;
 			segment = std::make_unique<paletteDefinitionSegment>(this->parsePDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case ODS :
 		{
+			std::cout << "ODS" << std::endl;
 			segment = std::make_unique<objectDefinitionSegment>(this->parseODS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case PCS :
 		{
+			std::cout << "PCS" << std::endl;
 			segment = std::make_unique<presentationCompositionSegment>(this->parsePCS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case WDS :
 		{
+			std::cout << "WDS" << std::endl;
 			segment = std::make_unique<windowDefinitionSegment>(this->parseWDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case END :
 		{
+			std::cout << "END" << std::endl;
+			std::cout << "----" << std::endl;
 			segment = std::make_unique<pgsSegment>(pgsSegment());
 			break;
 		}

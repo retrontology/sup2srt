@@ -7,9 +7,8 @@
 
 #include "bitmapDIBHeader.h"
 
-bitmapDIBHeader::bitmapDIBHeader() {
-	// TODO Auto-generated constructor stub
-
+bitmapDIBHeader::bitmapDIBHeader(HEADER_SIZE size) {
+	this->size = size;
 }
 
 bitmapDIBHeader::~bitmapDIBHeader() {

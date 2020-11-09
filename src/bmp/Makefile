@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-OBJS = bitmap.o bitmapFileHeader.o  bitmapDIBHeader.o bitmapColorTable.o
+OBJS = bitmap.o bitmapFileHeader.o bitmapDIBHeaderV4.o bitmapDIBHeader.o bitmapColorTable.o
 
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
