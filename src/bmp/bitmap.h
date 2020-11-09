@@ -11,14 +11,17 @@
 #include "bitmapColorTable.h"
 #include "bitmapDIBHeader.h"
 #include "bitmapFileHeader.h"
+#include "bitmapDIBHeaderV4.h"
 
 class bitmap {
 public:
 	bitmapColorTable table;
-	bitmapDIBHeader DIB;
+	bitmapDIBHeaderV4 DIB;
 	bitmapFileHeader fileHeader;
-	bitmap();
+	char * data;
+	bitmap(bitmapFileHeader fileHeader, bitmapDIBHeaderV4 DIB, bitmapColorTable table, char * data);
 	virtual ~bitmap();
+	void getByteArray(char * bytes);
 };
 
 #endif /* SRC_BMP_BITMAP_H_ */

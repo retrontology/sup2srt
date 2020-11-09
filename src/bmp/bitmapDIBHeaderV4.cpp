@@ -6,7 +6,13 @@
  */
 
 #include "bitmapDIBHeaderV4.h"
+#include "bitmapUtil.h"
 #include <cstring>
+
+bitmapDIBHeaderV4::bitmapDIBHeaderV4()
+{
+
+}
 
 bitmapDIBHeaderV4::bitmapDIBHeaderV4( unsigned long width,
 									  unsigned long height,
@@ -54,10 +60,33 @@ bitmapDIBHeaderV4::~bitmapDIBHeaderV4() {
 	// TODO Auto-generated destructor stub
 }
 
-unsigned char * bitmapDIBHeaderV4::getByteArray()
+void bitmapDIBHeaderV4::getByteArray(char * bytes)
 {
-	unsigned char * bytes = new unsigned char[this->size];
-	//std::memcpy();
-	return bytes;
+	bitmapUtil::numToChars(bytes, this->size, 4);
+	bitmapUtil::numToChars(bytes+4, this->width, 4);
+	bitmapUtil::numToChars(bytes+8, this->height, 4);
+	bitmapUtil::numToChars(bytes+12, this->planes, 2);
+	bitmapUtil::numToChars(bytes+14, this->bitsPerPixel, 2);
+	bitmapUtil::numToChars(bytes+16, this->compression, 4);
+	bitmapUtil::numToChars(bytes+20, this->imageSize, 4);
+	bitmapUtil::numToChars(bytes+24, this->xppm, 4);
+	bitmapUtil::numToChars(bytes+28, this->yppm, 4);
+	bitmapUtil::numToChars(bytes+32, this->colorCount, 4);
+	bitmapUtil::numToChars(bytes+36, this->importantColorCount, 4);
+	bitmapUtil::numToChars(bytes+40, this->redMask, 4);
+	bitmapUtil::numToChars(bytes+44, this->greenMask, 4);
+	bitmapUtil::numToChars(bytes+48, this->blueMask, 4);
+	bitmapUtil::numToChars(bytes+52, this->alphaMask, 4);
+	bitmapUtil::numToChars(bytes+56, this->colorSpaceType, 4);
+	//placeholder fo colorSpaceEndpoints
+	bitmapUtil::numToChars(bytes+60, 0, 8);
+	bitmapUtil::numToChars(bytes+68, 0, 8);
+	bitmapUtil::numToChars(bytes+76, 0, 8);
+	bitmapUtil::numToChars(bytes+84, 0, 8);
+	bitmapUtil::numToChars(bytes+92, 0, 4);
+	//end placeholder for colorSpaceEndpoints
+	bitmapUtil::numToChars(bytes+96, this->size, 4);
+	bitmapUtil::numToChars(bytes+100, this->size, 4);
+	bitmapUtil::numToChars(bytes+104, this->size, 4);
 }
 

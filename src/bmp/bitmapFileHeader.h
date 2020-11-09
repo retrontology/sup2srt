@@ -8,6 +8,8 @@
 #ifndef SRC_BMP_BITMAPFILEHEADER_H_
 #define SRC_BMP_BITMAPFILEHEADER_H_
 
+#include "bitmapUtil.h"
+
 #define BITMAP_FILEHEADER_SIZE 14
 
 enum fileHeader
@@ -29,6 +31,7 @@ public:
 	unsigned long dataOffset;
 	bitmapFileHeader(fileHeader header = BM, unsigned long fileSize = 0, unsigned int reserved1 = 0, unsigned int reserved2 = 0, unsigned long dataOffset = 0);
 	virtual ~bitmapFileHeader();
+	void getByteArray(char * bytes);
 };
 
 #endif /* SRC_BMP_BITMAPFILEHEADER_H_ */

@@ -10,8 +10,15 @@
 
 compositionObject::compositionObject()
 {
-	// TODO Auto-generated constructor stub
-
+	this->objectID = 0;
+	this->windowID = 0;
+	this->objectCroppedFlag = 0;
+	this->objectXPos = 0;
+	this->objectYPos = 0;
+	this->objectCropXPos = 0;
+	this->objectCropYPos = 0;
+	this->objectCropWidth = 0;
+	this->objectCropHeight = 0;
 }
 
 compositionObject::compositionObject(char * objectID, char * windowID, char * objectCroppedFlag, char * objectXPos, char * objectYPos, char * objectCropXPos, char * objectCropYPos, char * objectCropWidth, char * objectCropHeight)

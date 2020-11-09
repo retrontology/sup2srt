@@ -31,6 +31,7 @@ public:
 	unsigned int redGamma;
 	unsigned int greenGamma;
 	unsigned int blueGamma;
+	bitmapDIBHeaderV4();
 	bitmapDIBHeaderV4(unsigned long width,
 					  unsigned long height,
 					  unsigned int imageSize,
@@ -51,7 +52,7 @@ public:
 					  unsigned int greenGamma = 0,
 					  unsigned int blueGamma = 0);
 	virtual ~bitmapDIBHeaderV4();
-	unsigned char * getByteArray();
+	void getByteArray(char * bytes);
 };
 
 #endif /* SRC_BMP_BITMAPDIBHEADERV4_H_ */
