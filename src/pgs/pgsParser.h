@@ -17,6 +17,7 @@
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
 #include "objectData.h"
+#include "displaySegment.h"
 
 class pgsParser
 {
@@ -24,11 +25,13 @@ class pgsParser
 		std::ifstream pgsData;
 	public:
 		std::vector<std::unique_ptr<pgsSegment>>  PGS_SEGMENTS;
+		std::vector<displaySegment> displaySegments;
         pgsParser();
 		pgsParser(std::string filename);
 		virtual ~pgsParser();
 		void open(std::string filename);
 		pgsSegmentHeader parseHeader(char * buffer);
+		void parseDisplaySegments();
 		void parseAllSegments();
 		std::unique_ptr<pgsSegment> parseNextSegment();
 		presentationCompositionSegment parsePCS(char * buffer, unsigned int segmentSize);

@@ -12,6 +12,11 @@ displaySegment::displaySegment()
 
 }
 
+displaySegment::displaySegment(presentationCompositionSegment pcs)
+{
+	this->pcs = pcs;
+}
+
 displaySegment::displaySegment(presentationCompositionSegment pcs, std::vector<windowDefinitionSegment> wds, std::vector<paletteDefinitionSegment> pds, std::vector<objectDefinitionSegment> ods, pgsSegment end) {
 	this->pcs = pcs;
 	this->wds = wds;

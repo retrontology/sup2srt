@@ -22,6 +22,7 @@
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
 #include "objectData.h"
+#include "displaySegment.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -207,6 +208,59 @@ void pgsParser::parseAllSegments()
 		this->pgsData.peek();
 	}
 };
+
+void pgsParser::parseDisplaySegments()
+{
+	if(this->PGS_SEGMENTS.size() == 0){ this->parseAllSegments(); }
+	this->displaySegments.clear();
+	displaySegment ds;
+	std::vector<windowDefinitionSegment> wds;
+	std::vector<paletteDefinitionSegment> pds;
+	std::vector<objectDefinitionSegment> ods;
+	for(int i = 0; i < this->PGS_SEGMENTS.size(); i++)
+	{
+		switch(this->PGS_SEGMENTS[i]->HEADER.SEGMENT_TYPE)
+		{
+			case PCS :
+			{
+				presentationCompositionSegment* pcs = dynamic_cast<presentationCompositionSegment*>(this->PGS_SEGMENTS[i].get());
+				ds = displaySegment(*pcs);
+				wds.clear();
+				pds.clear();
+				ods.clear();
+				break;
+			}
+			case WDS :
+			{
+				windowDefinitionSegment* temp = dynamic_cast<windowDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
+				wds.push_back(*temp);
+				break;
+			}
+			case PDS :
+			{
+				paletteDefinitionSegment* temp = dynamic_cast<paletteDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
+				pds.push_back(*temp);
+				break;
+			}
+			case ODS :
+			{
+				objectDefinitionSegment* temp = dynamic_cast<objectDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
+				ods.push_back(*temp);
+				break;
+			}
+			case END :
+			{
+				ds.wds = wds;
+				ds.pds = pds;
+				ds.ods = ods;
+				ds.end = *this->PGS_SEGMENTS[i].get();
+				this->displaySegments.push_back(ds);
+				break;
+			}
+		}
+
+	}
+}
 
 void pgsParser::dumpBMPs()
 {

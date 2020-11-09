@@ -22,6 +22,7 @@ public:
 	std::vector<objectDefinitionSegment> ods;
 	pgsSegment end;
 	displaySegment();
+	displaySegment(presentationCompositionSegment pcs);
 	displaySegment(presentationCompositionSegment pcs,
 					std::vector<windowDefinitionSegment> wds,
 					std::vector<paletteDefinitionSegment> pds,
