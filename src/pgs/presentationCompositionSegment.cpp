@@ -9,6 +9,11 @@
 #include "pgsUtil.h"
 #include "compositionObject.h"
 
+presentationCompositionSegment::presentationCompositionSegment()
+{
+
+}
+
 presentationCompositionSegment::presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects)
 {
 	this->width = pgsUtil::char2ToInt(width);

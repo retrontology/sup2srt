@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-OBJS = pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o
+OBJS = pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o pgsImage.o displaySegment.o
 
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g

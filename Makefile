@@ -18,6 +18,7 @@ all:	sup2srt
 
 sup2srt:
 	$(MAKE) -C src
+	mv src/sup2srt .
 	
 clean:
 	$(MAKE) -C src clean

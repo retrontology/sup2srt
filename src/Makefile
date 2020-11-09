@@ -1,7 +1,7 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 OBJS = sup2srt.o
-PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o
+PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o objectData.o paletteSegment.o paletteDefinitionSegment.o pgsImage.o displaySegment.o
 PGS_PATH_OBJS = $(patsubst %.o,pgs/%.o,$(PGS_OBJS))
 BMP_OBJS = bitmap.o bitmapFileHeader.o bitmapDIBHeaderV4.o bitmapDIBHeader.o bitmapColorTable.o bitmapUtil.o colorSpaceEndpoints.o
 BMP_PATH_OBJS = $(patsubst %.o,bmp/%.o,$(BMP_OBJS))
@@ -23,7 +23,7 @@ endif
 all:	sup2srt
 
 sup2srt:	$(SUB_DIRS) $(OBJS)
-	$(CXX) $(LDFLAGS) sup2srt.o $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o ../$@
+	$(CXX) $(LDFLAGS) sup2srt.o $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o $@
 	
 %.o:	$(PROJECT_ROOT)%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $<
