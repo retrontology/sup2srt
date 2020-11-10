@@ -17,7 +17,7 @@ public:
 	unsigned char paletteVersionNumber;
 	unsigned int paletteCount;
 	paletteSegment * paletteSegments;
-	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCoun);
+	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCount);
 	virtual ~paletteDefinitionSegment();
 	bitmapColorTable getColorTable();
 };

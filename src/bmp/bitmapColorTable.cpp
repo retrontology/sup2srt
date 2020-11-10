@@ -6,10 +6,11 @@
  */
 
 #include "bitmapColorTable.h"
+#include "bitmapUtil.h"
 
 bitmapColorTable::bitmapColorTable(unsigned long * colors, unsigned int length)
 {
-	this->colors = new unsigned int[length];
+	this->colors = new unsigned long[length];
 	for(int i = 0; i < length; i ++) { this->colors[i] = colors[i]; }
 	this->length = length;
 }
@@ -22,5 +23,13 @@ bitmapColorTable::bitmapColorTable()
 
 bitmapColorTable::~bitmapColorTable() {
 	// TODO Auto-generated destructor stub
+}
+
+void bitmapColorTable::getByteArray(char * bytes)
+{
+	for(int i = 0; i < this->length; i++)
+	{
+		bitmapUtil::numToChars(bytes+i*4, this->colors[i], 4);
+	}
 }
 

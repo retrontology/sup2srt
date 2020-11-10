@@ -14,12 +14,12 @@
 
 enum fileHeader
 {
-	BM = 0x424D,
-	BA = 0x4241,
-	CI = 0x4349,
-	CP = 0x4350,
-	IC = 0x4943,
-	PT = 0x5054
+	BM = 0x4D42,
+	BA = 0x4142,
+	CI = 0x4943,
+	CP = 0x5043,
+	IC = 0x4349,
+	PT = 0x5450
 };
 
 class bitmapFileHeader {

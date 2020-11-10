@@ -12,11 +12,12 @@
 
 class bitmapColorTable {
 public:
-	unsigned int * colors;
+	unsigned long * colors;
 	unsigned int length;
 	bitmapColorTable(unsigned long * colors, unsigned int length);
 	bitmapColorTable();
 	virtual ~bitmapColorTable();
+	void getByteArray(char * bytes);
 };
 
 #endif /* SRC_BMP_BITMAPCOLORTABLE_H_ */

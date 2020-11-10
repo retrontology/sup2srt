@@ -22,4 +22,4 @@ sup2srt:
 	
 clean:
 	$(MAKE) -C src clean
-	rm -f sup2srt
+	rm -fr sup2srt img

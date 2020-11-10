@@ -26,6 +26,17 @@ displaySegment::displaySegment(presentationCompositionSegment pcs, std::vector<w
 }
 
 displaySegment::~displaySegment() {
-	// TODO Auto-generated destructor stub
+
+}
+
+bitmap displaySegment::getBitmap()
+{
+	bitmapColorTable ct = pds[0].getColorTable();
+	objectData data = ods[0].data;
+	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(ods[0].width, ods[0].height, data.length, ct.length*4);
+	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + ct.length + data.length + dib.size);
+	unsigned long offset = ((BITMAP_FILEHEADER_SIZE + ct.length + dib.size));
+	bitmapFileHeader fh = bitmapFileHeader(BM, fileSize, 0, 0, offset);
+	return bitmap(fh, dib, ct, data.data);
 }
 

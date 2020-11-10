@@ -23,6 +23,7 @@
 #include "objectDefinitionSegment.h"
 #include "objectData.h"
 #include "displaySegment.h"
+#include "../bmp/bitmap.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -40,7 +41,7 @@ void pgsParser::open(std::string filename)
 {
 	this->pgsData.open(filename, std::ifstream::binary);
 	this->parseAllSegments();
-	//this->dumpBMPs();
+	this->parseDisplaySegments();
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -55,32 +56,26 @@ std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 	{
 		case PDS :
 		{
-			std::cout << "PDS" << std::endl;
 			segment = std::make_unique<paletteDefinitionSegment>(this->parsePDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case ODS :
 		{
-			std::cout << "ODS" << std::endl;
 			segment = std::make_unique<objectDefinitionSegment>(this->parseODS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case PCS :
 		{
-			std::cout << "PCS" << std::endl;
 			segment = std::make_unique<presentationCompositionSegment>(this->parsePCS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case WDS :
 		{
-			std::cout << "WDS" << std::endl;
 			segment = std::make_unique<windowDefinitionSegment>(this->parseWDS(buffer, header.SEGMENT_SIZE));
 			break;
 		}
 		case END :
 		{
-			std::cout << "END" << std::endl;
-			std::cout << "----" << std::endl;
 			segment = std::make_unique<pgsSegment>(pgsSegment());
 			break;
 		}
@@ -258,7 +253,6 @@ void pgsParser::parseDisplaySegments()
 				break;
 			}
 		}
-
 	}
 }
 
@@ -266,18 +260,16 @@ void pgsParser::dumpBMPs()
 {
 	system("mkdir -p img");
 	int count = 0;
-	for(int i = 0; i < this->PGS_SEGMENTS.size(); i++)
+	for(int i = 0; i < this->displaySegments.size(); i++)
 	{
-		pgsSegment segment = *this->PGS_SEGMENTS[i];
-		if(segment.HEADER.SEGMENT_TYPE == ODS)
-		{
-			objectDefinitionSegment* segment = dynamic_cast<objectDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
-			std::ostringstream ss;
-			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
-			std::ofstream bmp("img/" + ss.str() + ".bmp");
-			bmp.write(segment->data.data, segment->data.length);
-			bmp.close();
-			count++;
-		}
+		std::ostringstream ss;
+		ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+		std::ofstream file("img/" + ss.str() + ".bmp");
+		bitmap bmp = this->displaySegments[i].getBitmap();
+		char * data = new char[bmp.fileHeader.fileSize];
+		bmp.getByteArray(data);
+		file.write(data, bmp.fileHeader.fileSize);
+		file.close();
+		count++;
 	}
 };

@@ -13,6 +13,7 @@
 #include "windowDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
+#include "../bmp/bitmap.h"
 
 class displaySegment {
 public:
@@ -29,6 +30,7 @@ public:
 					std::vector<objectDefinitionSegment> ods,
 					pgsSegment end);
 	virtual ~displaySegment();
+	bitmap getBitmap();
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */
