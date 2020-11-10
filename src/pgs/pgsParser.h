@@ -10,13 +10,13 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"
 #include "presentationCompositionSegment.h"
 #include "windowDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
-#include "objectData.h"
 #include "displaySegment.h"
 
 class pgsParser

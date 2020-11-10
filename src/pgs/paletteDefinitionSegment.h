@@ -10,14 +10,15 @@
 #include "pgsSegment.h"
 #include "paletteSegment.h"
 #include "../bmp/bitmapColorTable.h"
+#include <vector>
 
 class paletteDefinitionSegment: public pgsSegment {
 public:
 	unsigned char paletteID;
 	unsigned char paletteVersionNumber;
 	unsigned int paletteCount;
-	paletteSegment * paletteSegments;
-	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, paletteSegment * paletteSegments, unsigned int paletteCount);
+	std::vector<paletteSegment> paletteSegments;
+	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, std::vector<paletteSegment> paletteSegments, unsigned int paletteCount);
 	virtual ~paletteDefinitionSegment();
 	bitmapColorTable getColorTable();
 };

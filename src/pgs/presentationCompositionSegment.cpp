@@ -14,7 +14,7 @@ presentationCompositionSegment::presentationCompositionSegment()
 
 }
 
-presentationCompositionSegment::presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects)
+presentationCompositionSegment::presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, std::vector<compositionObject> compObjects)
 {
 	this->width = pgsUtil::char2ToInt(width);
 	this->height = pgsUtil::char2ToInt(height);

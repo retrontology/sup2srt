@@ -37,7 +37,7 @@ public:
 					  unsigned int imageSize,
 					  unsigned int colorCount = 0,
 					  unsigned char planes = 1,
-					  unsigned char bitsPerPixel = 8,
+					  unsigned char bitsPerPixel = 32,
 					  unsigned int compression = BI_RLE8,
 					  unsigned long xppm = 2835,
 					  unsigned long yppm = 2835,

@@ -32,16 +32,3 @@ unsigned char pgsUtil::cleanChar(char in)
 	return static_cast<unsigned int>(in) ;
 };
 
-char * pgsUtil::subArray(char * ptr, int length, int start)
-{
-	char * temp = new char[length];
-	int count = 0;
-	for(int i = start; i < length+start; i++)
-	{
-		temp[count] = ptr[i];
-		count++;
-	}
-	return temp;
-};
-
-

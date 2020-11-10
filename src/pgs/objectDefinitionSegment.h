@@ -8,7 +8,6 @@
 #ifndef OBJECTDEFINITIONSEGMENT_H_
 #define OBJECTDEFINITIONSEGMENT_H_
 
-#include "objectData.h"
 #include "pgsSegment.h"
 
 class objectDefinitionSegment: public pgsSegment {
@@ -19,7 +18,7 @@ public:
 	unsigned long objectDataLength;
 	unsigned int width;
 	unsigned int height;
-	objectData data;
+	char * data;
 	objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data);
 	virtual ~objectDefinitionSegment();
 };

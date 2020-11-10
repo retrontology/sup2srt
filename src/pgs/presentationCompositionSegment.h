@@ -10,6 +10,7 @@
 
 #include "pgsSegment.h"
 #include "compositionObject.h"
+#include <vector>
 
 class presentationCompositionSegment: public pgsSegment {
 public:
@@ -21,9 +22,9 @@ public:
 	unsigned char paletteUpdateFlag;
 	unsigned char paletteID;
 	unsigned char compObjectCount;
-	compositionObject * compObjects;
+	std::vector<compositionObject> compObjects;
 	presentationCompositionSegment();
-	presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, compositionObject * compObjects);
+	presentationCompositionSegment(char * width, char * height, char * framerate, char * compNumber, char * compState, char * paletteUpdateFlag, char * paletteID, char * compObjectCount, std::vector<compositionObject> compObjects);
 	virtual ~presentationCompositionSegment();
 };
 

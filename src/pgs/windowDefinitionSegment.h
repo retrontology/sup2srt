@@ -10,12 +10,13 @@
 
 #include "pgsSegment.h"
 #include "windowSegment.h"
+#include <vector>
 
 class windowDefinitionSegment: public pgsSegment  {
 public:
 	unsigned char numOfWindows;
-	windowSegment * windowSegments;
-	windowDefinitionSegment(char * numOfWindows, windowSegment * windowSegments);
+	std::vector<windowSegment> windowSegments;
+	windowDefinitionSegment(char * numOfWindows, std::vector<windowSegment> windowSegments);
 	virtual ~windowDefinitionSegment();
 };
 

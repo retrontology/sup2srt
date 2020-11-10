@@ -17,7 +17,6 @@ namespace pgsUtil
 	unsigned long int char3ToLong(char * ptr);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
-	char * subArray(char * ptr, int length, int start = 0);
 }
 
 

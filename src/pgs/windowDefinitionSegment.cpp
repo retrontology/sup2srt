@@ -9,7 +9,7 @@
 #include "pgsUtil.h"
 #include "windowSegment.h"
 
-windowDefinitionSegment::windowDefinitionSegment(char * numOfWindows, windowSegment * windowSegments) {
+windowDefinitionSegment::windowDefinitionSegment(char * numOfWindows, std::vector<windowSegment> windowSegments) {
 	// TODO Auto-generated constructor stub
 	this->numOfWindows = pgsUtil::cleanChar(numOfWindows[0]);
 	this->windowSegments = windowSegments;

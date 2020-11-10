@@ -6,8 +6,8 @@
  */
 
 #include "objectDefinitionSegment.h"
-#include "objectData.h"
 #include "pgsUtil.h"
+#include <cstring>
 
 objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data)
 {
@@ -17,7 +17,11 @@ objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectV
 	this->objectDataLength = pgsUtil::char3ToLong(objectDataLength);
 	this->width = pgsUtil::char2ToInt(width);
 	this->height = pgsUtil::char2ToInt(height);
-	this->data = objectData(data, this->objectDataLength);
+	this->data = new char[this->objectDataLength+2];
+	memcpy(this->data, data, this->objectDataLength);
+	this->data[this->objectDataLength] = 0x00;
+	this->data[this->objectDataLength+1] = 0x00;
+	this->objectDataLength+=2;
 }
 
 objectDefinitionSegment::~objectDefinitionSegment() {
