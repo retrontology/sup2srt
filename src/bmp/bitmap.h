@@ -19,7 +19,7 @@ public:
 	bitmapDIBHeaderV4 DIB;
 	bitmapFileHeader fileHeader;
 	char * data;
-	bitmap(bitmapFileHeader fileHeader, bitmapDIBHeaderV4 DIB, bitmapColorTable table, char * data);
+	bitmap(bitmapFileHeader fileHeader, bitmapDIBHeaderV4 DIB, char * data, bitmapColorTable table = bitmapColorTable());
 	virtual ~bitmap();
 	void getByteArray(char * bytes);
 };

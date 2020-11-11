@@ -19,7 +19,7 @@ namespace pgsUtil
 	unsigned long int char3ToLong(char * ptr);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
-	void decodeRLE(char * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
+	void decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
 }
 
 

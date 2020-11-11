@@ -16,23 +16,23 @@ bitmapDIBHeaderV4::bitmapDIBHeaderV4()
 
 bitmapDIBHeaderV4::bitmapDIBHeaderV4( unsigned long width,
 									  unsigned long height,
-									  unsigned int imageSize,
-									  unsigned int colorCount,
-									  unsigned char planes,
-									  unsigned char bitsPerPixel,
-									  unsigned int compression,
+									  unsigned long imageSize,
+									  unsigned long compression,
+									  unsigned long colorCount,
+									  unsigned int planes,
+									  unsigned int bitsPerPixel,
 									  unsigned long xppm,
 									  unsigned long yppm,
-									  unsigned int importantColorCount,
-									  unsigned int redMask,
-									  unsigned int greenMask,
-									  unsigned int blueMask,
-									  unsigned int alphaMask,
-									  unsigned int colorSpaceType,
+									  unsigned long importantColorCount,
+									  unsigned long redMask,
+									  unsigned long greenMask,
+									  unsigned long blueMask,
+									  unsigned long alphaMask,
+									  unsigned long colorSpaceType,
 									  unsigned long long colorSpaceEndpoints,
-									  unsigned int redGamma,
-									  unsigned int greenGamma,
-									  unsigned int blueGamma )
+									  unsigned long redGamma,
+									  unsigned long greenGamma,
+									  unsigned long blueGamma )
 {
 	this->width = width;
 	this->height = height;

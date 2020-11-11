@@ -31,6 +31,7 @@ public:
 					pgsSegment end);
 	virtual ~displaySegment();
 	bitmap getBitmap();
+	bitmap getRLEBitmap();
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */

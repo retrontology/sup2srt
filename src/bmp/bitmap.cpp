@@ -9,7 +9,7 @@
 #include <string>
 #include <cstring>
 
-bitmap::bitmap(bitmapFileHeader fileHeader, bitmapDIBHeaderV4 DIB, bitmapColorTable table, char * data) {
+bitmap::bitmap(bitmapFileHeader fileHeader, bitmapDIBHeaderV4 DIB, char * data, bitmapColorTable table) {
 	this->fileHeader = fileHeader;
 	this->DIB = DIB;
 	this->table = table;
@@ -25,12 +25,15 @@ void bitmap::getByteArray(char * bytes)
 {
 	this->fileHeader.getByteArray(bytes);
 	this->DIB.getByteArray(bytes+BITMAP_FILEHEADER_SIZE);
-	this->table.getByteArray(bytes+BITMAP_FILEHEADER_SIZE+this->DIB.size);
-	long offset = BITMAP_FILEHEADER_SIZE+this->DIB.size+this->table.length*4;
+	unsigned long offset = BITMAP_FILEHEADER_SIZE+this->DIB.size;
+	if(this->table.length > 0)
+	{
+		this->table.getByteArray(bytes+offset);
+		offset += this->table.length*4;
+	}
 	for(int i = 0; i < this->DIB.imageSize; i++)
 	{
 		bytes[offset+i] = this->data[i];
 	}
-	//memcpy(bytes+BITMAP_FILEHEADER_SIZE+this->DIB.size+this->table.length*4, this->data, this->DIB.imageSize);
 }
 

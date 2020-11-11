@@ -31,9 +31,10 @@ unsigned char pgsUtil::cleanChar(char in)
 	return static_cast<unsigned int>(in) ;
 };
 
-void pgsUtil::decodeRLE(char * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
 {
-	unsigned int w = 0, h = 0;
+	int w = 0;
+	int h = 0;
 	unsigned long pixels[ods.width][ods.height];
 	for(int i = 0; i < ods.objectDataLength; i++)
 	{
@@ -76,7 +77,7 @@ void pgsUtil::decodeRLE(char * out, paletteDefinitionSegment pds, objectDefiniti
 					{
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
-							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+2])].getRGBA();
+							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+2])].getABGR();
 							w++;
 						}
 						i+=2;
@@ -84,7 +85,7 @@ void pgsUtil::decodeRLE(char * out, paletteDefinitionSegment pds, objectDefiniti
 					}
 					case 3:
 					{
-						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8;
+						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | (pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8);
 						for(unsigned int j = 0; j < count; j++)
 						{
 							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+3])].getRGBA();
@@ -100,6 +101,15 @@ void pgsUtil::decodeRLE(char * out, paletteDefinitionSegment pds, objectDefiniti
 		{
 			pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i])].getRGBA();
 			w++;
+		}
+	}
+	unsigned long count = 0;
+	for(h = ods.height - 1; h >= 0; h--)
+	{
+		for(w=0; w < ods.width; w++)
+		{
+			out[count] = pixels[w][h];
+			count++;
 		}
 	}
 }

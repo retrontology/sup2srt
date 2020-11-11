@@ -14,43 +14,43 @@ class bitmapDIBHeaderV4: public bitmapDIBHeader {
 public:
 	unsigned long width;
 	unsigned long height;
-	unsigned char planes;
-	unsigned char bitsPerPixel;
-	unsigned int compression;
-	unsigned int imageSize;
+	unsigned int planes;
+	unsigned int bitsPerPixel;
+	unsigned long compression;
+	unsigned long imageSize;
 	unsigned long xppm;
 	unsigned long yppm;
-	unsigned int colorCount;
-	unsigned int importantColorCount;
-	unsigned int redMask;
-	unsigned int greenMask;
-	unsigned int blueMask;
-	unsigned int alphaMask;
-	unsigned int colorSpaceType;
+	unsigned long colorCount;
+	unsigned long importantColorCount;
+	unsigned long redMask;
+	unsigned long greenMask;
+	unsigned long blueMask;
+	unsigned long alphaMask;
+	unsigned long colorSpaceType;
 	unsigned long long colorSpaceEndpoints;
-	unsigned int redGamma;
-	unsigned int greenGamma;
-	unsigned int blueGamma;
+	unsigned long redGamma;
+	unsigned long greenGamma;
+	unsigned long blueGamma;
 	bitmapDIBHeaderV4();
 	bitmapDIBHeaderV4(unsigned long width,
 					  unsigned long height,
-					  unsigned int imageSize,
-					  unsigned int colorCount = 0,
-					  unsigned char planes = 1,
-					  unsigned char bitsPerPixel = 32,
-					  unsigned int compression = BI_RLE8,
+					  unsigned long imageSize,
+					  unsigned long compression = BI_RLE8,
+					  unsigned long colorCount = 0,
+					  unsigned int planes = 1,
+					  unsigned int bitsPerPixel = 32,
 					  unsigned long xppm = 2835,
 					  unsigned long yppm = 2835,
-					  unsigned int importantColorCount = 0,
-					  unsigned int redMask = 0,
-					  unsigned int greenMask = 0,
-					  unsigned int blueMask = 0,
-					  unsigned int alphaMask = 0,
-					  unsigned int colorSpaceType = 0x42475273,
+					  unsigned long importantColorCount = 0,
+					  unsigned long redMask = 0x000000FF,
+					  unsigned long greenMask = 0x0000FF00,
+					  unsigned long blueMask = 0x00FF0000,
+					  unsigned long alphaMask = 0xFF000000,
+					  unsigned long colorSpaceType = 0x42475273,
 					  unsigned long long colorSpaceEndpoints = 0,
-					  unsigned int redGamma = 0,
-					  unsigned int greenGamma = 0,
-					  unsigned int blueGamma = 0);
+					  unsigned long redGamma = 0,
+					  unsigned long greenGamma = 0,
+					  unsigned long blueGamma = 0);
 	virtual ~bitmapDIBHeaderV4();
 	void getByteArray(char * bytes);
 };
