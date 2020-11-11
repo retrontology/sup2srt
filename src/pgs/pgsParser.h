@@ -39,6 +39,7 @@ class pgsParser
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
 		objectDefinitionSegment parseODS(char * buffer, unsigned long segmentSize);
 		void dumpBMPs();
+		void dumpRLEs();
 };
 
 #endif /* PGSPARSER_H_ */

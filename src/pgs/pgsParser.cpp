@@ -42,6 +42,7 @@ void pgsParser::open(std::string filename)
 	this->pgsData.open(filename, std::ifstream::binary);
 	this->parseAllSegments();
 	this->parseDisplaySegments();
+	this->pgsData.close();
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -259,14 +260,38 @@ void pgsParser::dumpBMPs()
 	int count = 0;
 	for(int i = 0; i < this->displaySegments.size(); i++)
 	{
-		std::ostringstream ss;
-		ss << std::setw(5) << std::setfill('0') << std::to_string(count);
-		std::ofstream file("img/" + ss.str() + ".bmp");
-		bitmap bmp = this->displaySegments[i].getBitmap();
-		char * data = new char[bmp.fileHeader.fileSize];
-		bmp.getByteArray(data);
-		file.write(data, bmp.fileHeader.fileSize);
-		file.close();
-		count++;
+		if(this->displaySegments[i].ods.size()==1)
+		{
+			std::ostringstream ss;
+			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+			std::ofstream file;
+			file.open("img/" + ss.str() + ".bmp", std::ifstream::binary);
+			bitmap bmp = this->displaySegments[i].getBitmap();
+			char * data = new char[bmp.fileHeader.fileSize];
+			bmp.getByteArray(data);
+			file.write(data, bmp.fileHeader.fileSize);
+			file.close();
+			count++;
+		}
 	}
 };
+
+void pgsParser::dumpRLEs()
+{
+	system("mkdir -p img");
+	int count = 0;
+	for(int i = 0; i < this->displaySegments.size(); i++)
+	{
+		if(this->displaySegments[i].ods.size()==1)
+		{
+			std::ostringstream ss;
+			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+			std::ofstream file;
+			file.open("img/" + ss.str() + ".rle", std::ifstream::binary);
+			char * out = this->displaySegments[i].ods[0].data;
+			file.write(out, this->displaySegments[i].ods[0].objectDataLength);
+			file.close();
+			count++;
+		}
+	}
+}

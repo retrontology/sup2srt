@@ -25,7 +25,7 @@ paletteDefinitionSegment::~paletteDefinitionSegment() {
 bitmapColorTable paletteDefinitionSegment::getColorTable()
 {
 	unsigned long * colors = new unsigned long[this->paletteCount];
-	for(int i = 0; i < this->paletteCount; i++) { colors[i] = this->paletteSegments[i].getRGBA(); }
+	for(int i = 0; i < this->paletteCount; i++) { colors[i] = this->paletteSegments[i].getABGR(); }
 	return bitmapColorTable(colors, this->paletteCount);
 }
 

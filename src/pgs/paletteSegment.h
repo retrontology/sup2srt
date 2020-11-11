@@ -24,6 +24,7 @@ public:
 	unsigned char transparency;
 	unsigned long getRGBA();
 	unsigned long getARGB();
+	unsigned long getABGR();
 	paletteSegment();
 	paletteSegment(char * paletteEntryID, char * luminance, char * colorDiffRed, char * colorDiffBlue, char * transparency);
 	virtual ~paletteSegment();

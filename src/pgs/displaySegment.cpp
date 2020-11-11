@@ -31,11 +31,11 @@ displaySegment::~displaySegment() {
 
 bitmap displaySegment::getBitmap()
 {
-	bitmapColorTable ct = pds[0].getColorTable();
-	char * data = ods[0].data;
-	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(ods[0].width, ods[0].height, ods[0].objectDataLength, ct.length*4);
-	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + ct.length + ods[0].objectDataLength + dib.size);
-	unsigned long offset = ((BITMAP_FILEHEADER_SIZE + ct.length + dib.size));
+	bitmapColorTable ct = this->pds[0].getColorTable();
+	char * data = this->ods[0].data;
+	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(this->ods[0].width, this->ods[0].height, this->ods[0].objectDataLength, ct.length*4);
+	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + ct.length*4 + this->ods[0].objectDataLength + dib.size);
+	unsigned long offset = ((BITMAP_FILEHEADER_SIZE + ct.length*4 + dib.size));
 	bitmapFileHeader fh = bitmapFileHeader(BM, fileSize, 0, 0, offset);
 	return bitmap(fh, dib, ct, data);
 }
