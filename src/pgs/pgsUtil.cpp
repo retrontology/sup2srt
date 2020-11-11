@@ -56,7 +56,7 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 					{
 						for(unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1]); j++)
 						{
-							pixels[w][h] = pds.paletteSegments[0].getRGBA();
+							pixels[w][h] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=1;
@@ -67,7 +67,7 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8;
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[w][h] = pds.paletteSegments[0].getRGBA();
+							pixels[w][h] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=2;
@@ -77,7 +77,7 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 					{
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
-							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+2])].getABGR();
+							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+2])].getARGB();
 							w++;
 						}
 						i+=2;
@@ -88,7 +88,7 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | (pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8);
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+3])].getRGBA();
+							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+3])].getARGB();
 							w++;
 						}
 						i+=3;
@@ -99,7 +99,7 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 		}
 		else
 		{
-			pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i])].getRGBA();
+			pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i])].getARGB();
 			w++;
 		}
 	}

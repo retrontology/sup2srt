@@ -260,7 +260,7 @@ void pgsParser::dumpBMPs()
 	int count = 0;
 	for(int i = 0; i < this->displaySegments.size(); i++)
 	{
-		if(this->displaySegments[i].ods.size()==1)
+		if(this->displaySegments[i].ods.size()==1 && this->displaySegments[i].pds.size()==1)
 		{
 			std::ostringstream ss;
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);

@@ -33,13 +33,13 @@ displaySegment::~displaySegment() {
 
 bitmap displaySegment::getBitmap()
 {
-	unsigned long * pixels = new unsigned long[ods[0].width * ods[0].height];
-	pgsUtil::decodeRLE(pixels, pds[0], ods[0]);
-	char * data = new char[ods[0].width * ods[0].height*4];
-	for(unsigned long i = 0; i < ods[0].width * ods[0].height; i++){ bitmapUtil::numToChars(data+i*4, pixels[i], 4); }
+	unsigned long * pixels = new unsigned long[this->ods[0].width * this->ods[0].height];
+	pgsUtil::decodeRLE(pixels, this->pds[0], this->ods[0]);
+	char * data = new char[this->ods[0].width * this->ods[0].height*4];
+	for(unsigned long i = 0; i < this->ods[0].width * this->ods[0].height; i++){ bitmapUtil::numToChars(data+i*4, pixels[i], 4); }
 
-	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(this->ods[0].width, this->ods[0].height, ods[0].width * ods[0].height*4, BI_BITFIELDS);
-	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + ods[0].width * ods[0].height*4 + dib.size);
+	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(this->ods[0].width, this->ods[0].height, this->ods[0].width * this->ods[0].height*4, BI_BITFIELDS);
+	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + this->ods[0].width * this->ods[0].height*4 + dib.size);
 	unsigned long offset = ((BITMAP_FILEHEADER_SIZE + dib.size));
 	bitmapFileHeader fh = bitmapFileHeader(BM, fileSize, 0, 0, offset);
 	return bitmap(fh, dib, data);
