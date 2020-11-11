@@ -10,6 +10,8 @@
 
 #include "pgsSegment.h"
 #include <bits/stdc++.h>
+#include "objectDefinitionSegment.h"
+#include "paletteDefinitionSegment.h"
 
 namespace pgsUtil
 {
@@ -17,6 +19,7 @@ namespace pgsUtil
 	unsigned long int char3ToLong(char * ptr);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
+	void decodeRLE(char * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
 }
 
 

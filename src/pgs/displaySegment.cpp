@@ -6,6 +6,7 @@
  */
 
 #include "displaySegment.h"
+#include "pgsUtil.h"
 
 displaySegment::displaySegment()
 {
@@ -39,4 +40,3 @@ bitmap displaySegment::getBitmap()
 	bitmapFileHeader fh = bitmapFileHeader(BM, fileSize, 0, 0, offset);
 	return bitmap(fh, dib, ct, data);
 }
-
