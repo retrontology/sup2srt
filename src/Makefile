@@ -20,7 +20,7 @@ endif
 
 #LDFLAGS := -I /usr/include
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
-LIBFLAGS := -ltiff -llept -ltesseract
+LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract
 
 all:	sup2srt
 

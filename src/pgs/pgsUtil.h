@@ -20,7 +20,9 @@ namespace pgsUtil
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
 	double ptsToMilli(unsigned long in);
-	void decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
+	void decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods);
+	void decodeRLEtoBMP(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
+	void decodeRLEtoTIFF(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
 }
 
 

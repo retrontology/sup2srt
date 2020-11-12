@@ -36,11 +36,9 @@ double pgsUtil::ptsToMilli(unsigned long in)
 	return double(in/90);
 }
 
-void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods)
 {
-	int w = 0;
-	int h = 0;
-	unsigned long pixels[ods.width][ods.height];
+	int w = 0, h = 0;
 	for(int i = 0; i < ods.objectDataLength; i++)
 	{
 		if(ods.data[i] == 0x00)
@@ -108,6 +106,17 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 			w++;
 		}
 	}
+}
+
+void pgsUtil::decodeRLEtoTIFF(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+{
+	unsigned long ** pixels = new unsigned long * [ods.width];
+	for(int i = 0; i < ods.width; i++)
+	{
+		pixels[i] = new unsigned long[ods.height];
+	}
+	pgsUtil::decodeRLE(pixels, pds, ods);
+	int w, h;
 	unsigned long count = 0;
 	for(h = ods.height - 1; h >= 0; h--)
 	{
@@ -117,5 +126,27 @@ void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objec
 			count++;
 		}
 	}
+	//delete[] pixels;
+}
+
+void pgsUtil::decodeRLEtoBMP(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+{
+	unsigned long ** pixels = new unsigned long * [ods.width];
+	for(int i = 0; i < ods.width; i++)
+	{
+		pixels[i] = new unsigned long[ods.height];
+	}
+	pgsUtil::decodeRLE(pixels, pds, ods);
+	int w, h;
+	unsigned long count = 0;
+	for(h = 0; h <= ods.height; h++)
+	{
+		for(w=0; w < ods.width; w++)
+		{
+			out[count] = pixels[w][h];
+			count++;
+		}
+	}
+	//delete[] pixels;
 }
 

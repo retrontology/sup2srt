@@ -9,6 +9,8 @@
 #define SRC_PGS_DISPLAYSEGMENT_H_
 
 #include <vector>
+#include <tiffio.h>
+#include <tiffio.hxx>
 #include "presentationCompositionSegment.h"
 #include "windowDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
@@ -30,7 +32,7 @@ public:
 					std::vector<objectDefinitionSegment> ods,
 					pgsSegment end);
 	virtual ~displaySegment();
-	void getTiff();
+	TIFF * getTiff();
 	bitmap getBitmap();
 	bitmap getRLEBitmap();
 };

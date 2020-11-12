@@ -15,7 +15,7 @@ endif
 
 #CFLAGS := -fPIC
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
-LIBFLAGS += -ltiff
+LIBFLAGS += -ltiff -ltiffxx
 
 all:	$(OBJS)
 
