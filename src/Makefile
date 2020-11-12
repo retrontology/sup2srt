@@ -18,8 +18,9 @@ else ifeq ($(BUILD_MODE),linuxtools)
 #    $(error Build mode $(BUILD_MODE) not supported by this Makefile)
 endif
 
-#LDFLAGS := -I pgs -L pgs
-LIBFLAGS := -llept -ltesseract
+#LDFLAGS := -I /usr/include
+#CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+LIBFLAGS := -ltiff -llept -ltesseract
 
 all:	sup2srt
 
@@ -27,7 +28,7 @@ sup2srt:	$(SUB_DIRS) $(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o $@ ${LIBFLAGS}
 	
 %.o:	$(PROJECT_ROOT)%.cpp
-	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< ${LIBFLAGS}
 
 %.o:	$(PROJECT_ROOT)%.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<

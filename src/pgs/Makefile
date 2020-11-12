@@ -14,6 +14,8 @@ else ifeq ($(BUILD_MODE),linuxtools)
 endif
 
 #CFLAGS := -fPIC
+#CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+LIBFLAGS += -ltiff
 
 all:	$(OBJS)
 
@@ -21,7 +23,7 @@ libpgs.so:	$(OBJS)
 	$(CXX) -shared -o $@ $(OBJS)
 
 %.o:	$(PROJECT_ROOT)%.cpp
-	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $< ${LIBFLAGS}
 
 %.o:	$(PROJECT_ROOT)%.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<

@@ -32,10 +32,10 @@ std::string srtUtil::milliToSRTString(double in)
 	return std::string(h.str() + ":" + min.str() + ":" + s.str() + "," + mil.str());
 }
 
-void srtUtil::dumpBMPStrings(pgsParser * pgs, std::string language)
+void srtUtil::dumpBMPStrings(pgsParser * pgs, const char* language)
 {
     tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
-    if (api->Init(NULL, language.c_str()))
+    if (api->Init(NULL, language))
     {
 		fprintf(stderr, "Could not initialize tesseract.\n");
 		exit(1);

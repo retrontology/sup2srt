@@ -12,7 +12,7 @@ else ifeq ($(BUILD_MODE),linuxtools)
 endif
 
 MAKEFLAGS += --jobs=8
-CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+#CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
 all:	sup2srt
 

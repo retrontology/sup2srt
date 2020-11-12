@@ -5,6 +5,10 @@
  *      Author: blazer
  */
 
+#include <tiffio.h>
+#include <tiffio.hxx>
+#include <sstream>
+#include <iostream>
 #include "displaySegment.h"
 #include "pgsUtil.h"
 #include "../bmp/bitmapUtil.h"
@@ -29,6 +33,14 @@ displaySegment::displaySegment(presentationCompositionSegment pcs, std::vector<w
 
 displaySegment::~displaySegment() {
 
+}
+
+void displaySegment::getTiff()
+{
+	std::ostringstream tiffStream;
+	TIFF* temp = TIFFStreamOpen("temp", &tiffStream);
+	TIFFClose(temp);
+	//TIFF* temp = TIFFOpen("test.tiff", "w");
 }
 
 bitmap displaySegment::getBitmap()
