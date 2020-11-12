@@ -36,4 +36,3 @@ void bitmap::getByteArray(char * bytes)
 		bytes[offset+i] = this->data[i];
 	}
 }
-

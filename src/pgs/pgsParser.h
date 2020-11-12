@@ -10,6 +10,7 @@
 
 #include <string>
 #include <fstream>
+#include <memory>
 #include <vector>
 #include "pgsSegment.h"
 #include "pgsSegmentHeader.h"

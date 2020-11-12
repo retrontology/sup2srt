@@ -8,6 +8,8 @@
 #ifndef SRC_BMP_BITMAPUTIL_H_
 #define SRC_BMP_BITMAPUTIL_H_
 
+#include <string>
+
 namespace bitmapUtil
 {
 	void numToChars(char * out, unsigned long long num, unsigned int length);

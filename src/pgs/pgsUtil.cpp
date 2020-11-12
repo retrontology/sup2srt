@@ -31,6 +31,11 @@ unsigned char pgsUtil::cleanChar(char in)
 	return static_cast<unsigned int>(in) ;
 };
 
+double pgsUtil::ptsToMilli(unsigned long in)
+{
+	return double(in/90);
+}
+
 void pgsUtil::decodeRLE(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
 {
 	int w = 0;

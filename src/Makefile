@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-OBJS = sup2srt.o
+OBJS = sup2srt.o srtUtil.o
 PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o paletteSegment.o paletteDefinitionSegment.o displaySegment.o
 PGS_PATH_OBJS = $(patsubst %.o,pgs/%.o,$(PGS_OBJS))
 BMP_OBJS = bitmap.o bitmapFileHeader.o bitmapDIBHeaderV4.o bitmapDIBHeader.o bitmapColorTable.o bitmapUtil.o colorSpaceEndpoints.o
@@ -19,11 +19,12 @@ else ifeq ($(BUILD_MODE),linuxtools)
 endif
 
 #LDFLAGS := -I pgs -L pgs
+LIBFLAGS := -llept -ltesseract
 
 all:	sup2srt
 
 sup2srt:	$(SUB_DIRS) $(OBJS)
-	$(CXX) $(LDFLAGS) sup2srt.o $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o $@
+	$(CXX) $(LDFLAGS) $(OBJS) $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o $@ ${LIBFLAGS}
 	
 %.o:	$(PROJECT_ROOT)%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $<

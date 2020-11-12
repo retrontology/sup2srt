@@ -9,7 +9,6 @@
 #define SRC_BMP_BITMAP_H_
 
 #include "bitmapColorTable.h"
-#include "bitmapDIBHeader.h"
 #include "bitmapFileHeader.h"
 #include "bitmapDIBHeaderV4.h"
 

@@ -4,12 +4,12 @@
  *  Created on: Nov 1, 2020
  *      Author: blazer
  */
-
 #include <iostream>
 #include <string>
 #include <boost/program_options.hpp>
 #include "pgs/pgsUtil.h"
 #include "pgs/pgsParser.h"
+#include "srtUtil.h"
 
 
 int main(int argc, char** argv)
@@ -18,5 +18,6 @@ int main(int argc, char** argv)
 	pgsParser pgsp(filename);
 	//pgsp.dumpRLEs();
 	pgsp.dumpBMPs();
+	srtUtil::dumpBMPStrings(&pgsp, "eng");
     return 0;
 }

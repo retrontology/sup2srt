@@ -6,6 +6,7 @@
  */
 
 #include "bitmapUtil.h"
+#include <string>
 
 void bitmapUtil::numToChars(char * out, unsigned long long num, unsigned int length)
 {
@@ -16,4 +17,3 @@ void bitmapUtil::numToChars(char * out, unsigned long long num, unsigned int len
 		mask = mask << 8;
 	}
 }
-

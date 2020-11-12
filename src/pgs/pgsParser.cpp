@@ -4,10 +4,8 @@
  *  Created on: Nov 1, 2020
  *      Author: blazer
  */
-
 #include <fstream>
 #include <bits/stdc++.h>
-#include <tesseract/baseapi.h>
 #include <libavcodec/avcodec.h>
 #include <string>
 #include <stdlib.h>
