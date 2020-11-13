@@ -112,24 +112,13 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 	}
 }
 
-void pgsUtil::decodeRLEtoBMP(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+void pgsUtil::numToChars(char * out, unsigned long long num, unsigned int length)
 {
-	unsigned long ** pixels = new unsigned long * [ods.height];
-	for(int i = 0; i < ods.height; i++)
+	unsigned long long mask = 0x00000000000000FF;
+	for(int i = 0; i < length; i++)
 	{
-		pixels[i] = new unsigned long[ods.width];
+		out[i] = (num & mask) >> (i*8);
+		mask = mask << 8;
 	}
-	pgsUtil::decodeRLE(pixels, pds, ods);
-	int w, h;
-	unsigned long count = 0;
-	for(h = ods.height-1; h > -1; h--)
-	{
-		for(w=0; w < ods.width; w++)
-		{
-			out[count] = pixels[h][w];
-			count++;
-		}
-	}
-	//delete[] pixels;
 }
 

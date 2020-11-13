@@ -22,6 +22,7 @@ namespace pgsUtil
 	double ptsToMilli(unsigned long in);
 	void decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods);
 	void decodeRLEtoBMP(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods);
+	void numToChars(char * out, unsigned long long num, unsigned int length);
 }
 
 

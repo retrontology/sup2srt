@@ -21,7 +21,6 @@
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
 #include "displaySegment.h"
-#include "../bmp/bitmap.h"
 #include "../srtUtil.h"
 
 pgsParser::pgsParser(std::string filename)
@@ -252,28 +251,6 @@ void pgsParser::parseDisplaySegments()
 		}
 	}
 }
-
-void pgsParser::dumpBMPs()
-{
-	system("mkdir -p img");
-	int count = 0;
-	for(int i = 0; i < this->displaySegments.size(); i++)
-	{
-		if(this->displaySegments[i].ods.size()==1 && this->displaySegments[i].pds.size()==1)
-		{
-			std::ostringstream ss;
-			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
-			std::ofstream file;
-			file.open("img/" + ss.str() + ".bmp", std::ifstream::binary);
-			bitmap bmp = this->displaySegments[i].getBitmap();
-			char * data = new char[bmp.fileHeader.fileSize];
-			bmp.getByteArray(data);
-			file.write(data, bmp.fileHeader.fileSize);
-			file.close();
-			count++;
-		}
-	}
-};
 
 void pgsParser::dumpTIFFs()
 {

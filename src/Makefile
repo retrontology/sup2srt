@@ -3,9 +3,7 @@ PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 OBJS = sup2srt.o srtUtil.o
 PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o paletteSegment.o paletteDefinitionSegment.o displaySegment.o
 PGS_PATH_OBJS = $(patsubst %.o,pgs/%.o,$(PGS_OBJS))
-BMP_OBJS = bitmap.o bitmapFileHeader.o bitmapDIBHeaderV4.o bitmapDIBHeader.o bitmapColorTable.o bitmapUtil.o colorSpaceEndpoints.o
-BMP_PATH_OBJS = $(patsubst %.o,bmp/%.o,$(BMP_OBJS))
-SUB_DIRS = PGS BMP
+SUB_DIRS = PGS
 
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
@@ -35,11 +33,7 @@ sup2srt:	$(SUB_DIRS) $(OBJS)
 
 PGS:
 	$(MAKE) -C pgs $(PGS_OBJS)
-
-BMP:
-	$(MAKE) -C bmp $(BMP_OBJS)
 	
 clean:
 	$(MAKE) -C pgs clean
-	$(MAKE) -C bmp clean
 	rm -fr sup2srt $(OBJS)

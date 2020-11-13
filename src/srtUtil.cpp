@@ -6,7 +6,6 @@
  */
 
 #include "srtUtil.h"
-#include "bmp/bitmap.h"
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -48,30 +47,6 @@ void srtUtil::dumpTIFFStrings(pgsParser * pgs, const char* language)
 			std::ostringstream data = pgs->displaySegments[i].getTIFF();
 			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
 			pixSetResolution(pix, 70, 70);
-			api->SetImage(pix);
-			std::cout << std::to_string(count) + ": " + api->GetUTF8Text() << std::endl;
-			count++;
-		}
-	}
-}
-
-void srtUtil::dumpBMPStrings(pgsParser * pgs, const char* language)
-{
-    tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
-    if (api->Init(NULL, language))
-    {
-		fprintf(stderr, "Could not initialize tesseract.\n");
-		exit(1);
-	}
-	int count = 0;
-	for(int i = 0; i < pgs->displaySegments.size(); i++)
-	{
-		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
-		{
-			bitmap bmp = pgs->displaySegments[i].getBitmap();
-			char * data = new char[bmp.fileHeader.fileSize];
-			bmp.getByteArray(data);
-			Pix * pix = pixReadMem(reinterpret_cast<unsigned char *>(data), bmp.fileHeader.fileSize);
 			api->SetImage(pix);
 			std::cout << std::to_string(count) + ": " + api->GetUTF8Text() << std::endl;
 			count++;

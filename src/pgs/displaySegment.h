@@ -15,7 +15,6 @@
 #include "windowDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
-#include "../bmp/bitmap.h"
 
 class displaySegment {
 public:
@@ -33,8 +32,6 @@ public:
 					pgsSegment end);
 	virtual ~displaySegment();
 	std::ostringstream getTIFF();
-	bitmap getBitmap();
-	bitmap getRLEBitmap();
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */
