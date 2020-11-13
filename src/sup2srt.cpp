@@ -16,9 +16,8 @@ int main(int argc, char** argv)
 	pgsParser pgsp(filename);
 	//pgsp.printDisplaySegments();
 	//pgsp.dumpRLEs();
-	//pgsp.dumpBMPs();
 	//pgsp.dumpTIFFs();
 	//srtUtil::dumpTIFFStrings(&pgsp, "eng");
-	srtUtil::pgsToSRT(&pgsp, "eng");
+	std::cout << srtUtil::pgsToSRT(&pgsp, "eng").str();
     return 0;
 }

@@ -54,8 +54,9 @@ void srtUtil::dumpTIFFStrings(pgsParser * pgs, const char* language)
 	}
 }
 
-void srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
+std::ostringstream srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
 {
+	std::ostringstream out;
 	tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
 	if (api->Init(NULL, language))
 	{
@@ -85,11 +86,12 @@ void srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
 					}
 				}
 			}
-			std::cout << std::to_string(count) << std::endl;
-			std::cout << start + " --> " + end << std::endl;
-			std::cout << text << std::endl << std::endl;
+			out << std::to_string(count) << std::endl;
+			out << start + " --> " + end << std::endl;
+			out << text << std::endl << std::endl;
 			count++;
 		}
 	}
 	delete api;
+	return out;
 }

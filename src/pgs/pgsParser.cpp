@@ -6,7 +6,6 @@
  */
 #include <fstream>
 #include <bits/stdc++.h>
-#include <libavcodec/avcodec.h>
 #include <string>
 #include <stdlib.h>
 #include <vector>
@@ -21,7 +20,6 @@
 #include "paletteDefinitionSegment.h"
 #include "objectDefinitionSegment.h"
 #include "displaySegment.h"
-#include "../srtUtil.h"
 
 pgsParser::pgsParser(std::string filename)
 {
