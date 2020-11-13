@@ -22,6 +22,7 @@
 #include "objectDefinitionSegment.h"
 #include "displaySegment.h"
 #include "../bmp/bitmap.h"
+#include "../srtUtil.h"
 
 pgsParser::pgsParser(std::string filename)
 {
@@ -310,5 +311,27 @@ void pgsParser::dumpRLEs()
 			file.close();
 			count++;
 		}
+	}
+}
+
+void pgsParser::printDisplaySegments()
+{
+	for(int i = 0; i < this->displaySegments.size(); i++)
+	{
+		std::cout << "PCS: " + std::to_string(this->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP) << std::endl;
+		for(int j = 0; j < this->displaySegments[i].wds.size(); j++)
+		{
+			std::cout << "WDS: " + std::to_string(this->displaySegments[i].wds[j].HEADER.PRESENTATION_TIMESTAMP) << std::endl;
+		}
+		for(int j = 0; j < this->displaySegments[i].pds.size(); j++)
+		{
+			std::cout << "PDS: " + std::to_string(this->displaySegments[i].pds[j].HEADER.PRESENTATION_TIMESTAMP) << std::endl;
+		}
+		for(int j = 0; j < this->displaySegments[i].ods.size(); j++)
+		{
+			std::cout << "ODS: " + std::to_string(this->displaySegments[i].ods[j].HEADER.PRESENTATION_TIMESTAMP) << std::endl;
+		}
+		std::cout << "END: " + std::to_string(this->displaySegments[i].end.HEADER.PRESENTATION_TIMESTAMP) << std::endl;
+		std::cout << "--------------------" << std::endl;
 	}
 }

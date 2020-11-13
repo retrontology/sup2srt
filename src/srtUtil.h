@@ -16,7 +16,7 @@ namespace srtUtil
 	std::string milliToSRTString(double milli);
 	void dumpBMPStrings(pgsParser * pgs, const char* language);
 	void dumpTIFFStrings(pgsParser * pgs, const char* language);
-	void pgsToSRT(pgsParser pgs);
+	void pgsToSRT(pgsParser * pgs, const char* language);
 };
 
 #endif /* SRC_SRTUTIL_H_ */

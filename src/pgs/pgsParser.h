@@ -42,6 +42,7 @@ class pgsParser
 		void dumpBMPs();
 		void dumpTIFFs();
 		void dumpRLEs();
+		void printDisplaySegments();
 };
 
 #endif /* PGSPARSER_H_ */

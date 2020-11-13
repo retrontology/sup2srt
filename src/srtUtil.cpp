@@ -46,8 +46,8 @@ void srtUtil::dumpTIFFStrings(pgsParser * pgs, const char* language)
 		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
 		{
 			std::ostringstream data = pgs->displaySegments[i].getTIFF();
-
 			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
+			pixSetResolution(pix, 70, 70);
 			api->SetImage(pix);
 			std::cout << std::to_string(count) + ": " + api->GetUTF8Text() << std::endl;
 			count++;
@@ -79,7 +79,42 @@ void srtUtil::dumpBMPStrings(pgsParser * pgs, const char* language)
 	}
 }
 
-void srtUtil::pgsToSRT(pgsParser pgs)
+void srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
 {
-
+	tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
+	if (api->Init(NULL, language))
+	{
+		fprintf(stderr, "Could not initialize tesseract.\n");
+		exit(1);
+	}
+	int count = 1;
+	for(int i = 0; i < pgs->displaySegments.size(); i++)
+	{
+		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
+		{
+			std::string start = srtUtil::milliToSRTString(pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
+			std::string end = srtUtil::milliToSRTString(pgs->displaySegments[i+1].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
+			std::ostringstream data = pgs->displaySegments[i].getTIFF();
+			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
+			pixSetResolution(pix, 70, 70);
+			api->SetImage(pix);
+			std::string text(api->GetUTF8Text());
+			for(int i = 0; i < text.size(); i++)
+			{
+				switch (text[i])
+				{
+					case '|':
+					{
+						text[i] = 'I';
+						break;
+					}
+				}
+			}
+			std::cout << std::to_string(count) << std::endl;
+			std::cout << start + " --> " + end << std::endl;
+			std::cout << text << std::endl << std::endl;
+			count++;
+		}
+	}
+	delete api;
 }

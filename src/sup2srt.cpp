@@ -14,9 +14,11 @@ int main(int argc, char** argv)
 {
 	std::string filename = argv[1];
 	pgsParser pgsp(filename);
+	//pgsp.printDisplaySegments();
 	//pgsp.dumpRLEs();
 	//pgsp.dumpBMPs();
-	pgsp.dumpTIFFs();
-	srtUtil::dumpTIFFStrings(&pgsp, "eng");
+	//pgsp.dumpTIFFs();
+	//srtUtil::dumpTIFFStrings(&pgsp, "eng");
+	srtUtil::pgsToSRT(&pgsp, "eng");
     return 0;
 }
