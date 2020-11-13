@@ -35,7 +35,7 @@ displaySegment::~displaySegment() {
 
 }
 
-TIFF * displaySegment::getTiff()
+std::ostringstream displaySegment::getTIFF()
 {
 	std::ostringstream tiffStream;
 	TIFF* out = TIFFStreamOpen(std::to_string(this->ods[0].objectID).c_str(), &tiffStream);
@@ -47,22 +47,19 @@ TIFF * displaySegment::getTiff()
 	TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
 
-	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(out, this->ods[0].width*4));
+	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, this->ods[0].width*4);
 	unsigned char* buffer = (unsigned char*)_TIFFmalloc(this->ods[0].width*4);
 	unsigned long ** pixels = new unsigned long * [this->ods[0].height];
-	for(int i = 0; i < this->ods[0].height; i++)
-	{
-		pixels[i] = new unsigned long[this->ods[0].width];
-	}
+	for(int i = 0; i < this->ods[0].height; i++){ pixels[i] = new unsigned long[this->ods[0].width]; }
 	pgsUtil::decodeRLE(pixels, this->pds[0], this->ods[0]);
-	//Now writing image to the file one strip at a time
 	for (int i = 0; i < ods[0].height; i++)
 	{
-	    memcpy(buffer, pixels[i], this->ods[0].width*4);    // check the index here, and figure out why not using h*linebytes
-	    if (TIFFWriteScanline(out, buffer, i, 0) < 0) break;
+	    memcpy(buffer, pixels[i], this->ods[0].width*4);
+	    if (TIFFWriteScanline(out, buffer, i) < 0) break;
 	}
 	TIFFClose(out);
-	return out;
+	if (buffer){ _TIFFfree(buffer); }
+	return tiffStream;
 }
 
 bitmap displaySegment::getBitmap()

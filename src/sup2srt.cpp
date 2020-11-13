@@ -17,7 +17,8 @@ int main(int argc, char** argv)
 	std::string filename = argv[1];
 	pgsParser pgsp(filename);
 	//pgsp.dumpRLEs();
-	pgsp.dumpBMPs();
-	//srtUtil::dumpBMPStrings(&pgsp, "eng");
+	//pgsp.dumpBMPs();
+	//pgsp.dumpTIFFs();
+	srtUtil::dumpTIFFStrings(&pgsp, "eng");
     return 0;
 }

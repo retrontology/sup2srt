@@ -274,6 +274,26 @@ void pgsParser::dumpBMPs()
 	}
 };
 
+void pgsParser::dumpTIFFs()
+{
+	system("mkdir -p img");
+	int count = 0;
+	for(int i = 0; i < this->displaySegments.size(); i++)
+	{
+		if(this->displaySegments[i].ods.size()==1 && this->displaySegments[i].pds.size()==1)
+		{
+			std::ostringstream ss;
+			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
+			std::ofstream file;
+			file.open("img/" + ss.str() + ".tiff", std::ifstream::binary);
+			std::ostringstream tiff = this->displaySegments[i].getTIFF();
+			file.write(tiff.str().c_str(), tiff.str().length());
+			file.close();
+			count++;
+		}
+	}
+}
+
 void pgsParser::dumpRLEs()
 {
 	system("mkdir -p img");

@@ -32,7 +32,7 @@ public:
 					std::vector<objectDefinitionSegment> ods,
 					pgsSegment end);
 	virtual ~displaySegment();
-	TIFF * getTiff();
+	std::ostringstream getTIFF();
 	bitmap getBitmap();
 	bitmap getRLEBitmap();
 };
