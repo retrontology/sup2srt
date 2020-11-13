@@ -9,6 +9,7 @@
 #define OBJECTDEFINITIONSEGMENT_H_
 
 #include "pgsSegment.h"
+#include <string>
 
 class objectDefinitionSegment: public pgsSegment {
 public:

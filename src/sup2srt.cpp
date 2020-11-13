@@ -18,6 +18,6 @@ int main(int argc, char** argv)
 	pgsParser pgsp(filename);
 	//pgsp.dumpRLEs();
 	pgsp.dumpBMPs();
-	srtUtil::dumpBMPStrings(&pgsp, "eng");
+	//srtUtil::dumpBMPStrings(&pgsp, "eng");
     return 0;
 }

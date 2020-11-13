@@ -286,8 +286,7 @@ void pgsParser::dumpRLEs()
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
 			std::ofstream file;
 			file.open("img/" + ss.str() + ".rle", std::ifstream::binary);
-			char * out = this->displaySegments[i].ods[0].data;
-			file.write(out, this->displaySegments[i].ods[0].objectDataLength);
+			file.write(this->displaySegments[i].ods[0].data, this->displaySegments[i].ods[0].objectDataLength);
 			file.close();
 			count++;
 		}

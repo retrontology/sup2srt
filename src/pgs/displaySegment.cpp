@@ -39,16 +39,28 @@ TIFF * displaySegment::getTiff()
 {
 	std::ostringstream tiffStream;
 	TIFF* out = TIFFStreamOpen(std::to_string(this->ods[0].objectID).c_str(), &tiffStream);
-	TIFFSetField (out, TIFFTAG_IMAGEWIDTH, this->ods[0].width);  // set the width of the image
-	TIFFSetField(out, TIFFTAG_IMAGELENGTH, this->ods[0].height);    // set the height of the image
-	TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, 4);   // set number of channels per pixel
-	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);    // set the size of the channels
-	TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);    // set the origin of the image.
-	//   Some other essential fields to set that you do not have to understand for now.
+	TIFFSetField (out, TIFFTAG_IMAGEWIDTH, this->ods[0].width);
+	TIFFSetField(out, TIFFTAG_IMAGELENGTH, this->ods[0].height);
+	TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, 4);
+	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);
+	TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
 	TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
-	unsigned long * pixels = new unsigned long[this->ods[0].width * this->ods[0].height];
-	pgsUtil::decodeRLEtoTIFF(pixels, this->pds[0], this->ods[0]);
+
+	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(out, this->ods[0].width*4));
+	unsigned char* buffer = (unsigned char*)_TIFFmalloc(this->ods[0].width*4);
+	unsigned long ** pixels = new unsigned long * [this->ods[0].height];
+	for(int i = 0; i < this->ods[0].height; i++)
+	{
+		pixels[i] = new unsigned long[this->ods[0].width];
+	}
+	pgsUtil::decodeRLE(pixels, this->pds[0], this->ods[0]);
+	//Now writing image to the file one strip at a time
+	for (int i = 0; i < ods[0].height; i++)
+	{
+	    memcpy(buffer, pixels[i], this->ods[0].width*4);    // check the index here, and figure out why not using h*linebytes
+	    if (TIFFWriteScanline(out, buffer, i, 0) < 0) break;
+	}
 	TIFFClose(out);
 	return out;
 }
@@ -69,11 +81,10 @@ bitmap displaySegment::getBitmap()
 bitmap displaySegment::getRLEBitmap()
 {
 	bitmapColorTable ct = this->pds[0].getColorTable();
-	char * data = this->ods[0].data;
 	bitmapDIBHeaderV4 dib = bitmapDIBHeaderV4(this->ods[0].width, this->ods[0].height, this->ods[0].objectDataLength, BI_RLE8, ct.length);
 	unsigned long fileSize = (BITMAP_FILEHEADER_SIZE + ct.length*4 + this->ods[0].objectDataLength + dib.size);
 	unsigned long offset = ((BITMAP_FILEHEADER_SIZE + ct.length*4 + dib.size));
 	bitmapFileHeader fh = bitmapFileHeader(BM, fileSize, 0, 0, offset);
-	return bitmap(fh, dib, data, ct);
+	return bitmap(fh, dib, this->ods[0].data, ct);
 }
 

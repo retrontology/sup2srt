@@ -17,7 +17,7 @@ objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectV
 	this->objectDataLength = pgsUtil::char3ToLong(objectDataLength);
 	this->width = pgsUtil::char2ToInt(width);
 	this->height = pgsUtil::char2ToInt(height);
-	this->data = new char [this->objectDataLength];
+	this->data = new char[this->objectDataLength];
 	memcpy(this->data, data, this->objectDataLength);
 }
 

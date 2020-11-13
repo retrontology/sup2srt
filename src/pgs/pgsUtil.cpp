@@ -59,7 +59,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					{
 						for(unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1]); j++)
 						{
-							pixels[w][h] = pds.paletteSegments[0].getARGB();
+							pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=1;
@@ -70,7 +70,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8;
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[w][h] = pds.paletteSegments[0].getARGB();
+							pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=2;
@@ -78,9 +78,11 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					}
 					case 2:
 					{
+						char color = pgsUtil::cleanChar(ods.data[i+2]);
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
-							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+2])].getARGB();
+
+							pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
 						i+=2;
@@ -89,9 +91,10 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					case 3:
 					{
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | (pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8);
+						char color = pgsUtil::cleanChar(ods.data[i+3]);
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i+3])].getARGB();
+							pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
 						i+=3;
@@ -102,48 +105,28 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 		}
 		else
 		{
-			pixels[w][h] = pds.paletteSegments[pgsUtil::cleanChar(ods.data[i])].getARGB();
+			char color = pgsUtil::cleanChar(ods.data[i]);
+			pixels[h][w] = pds.paletteSegments[color].getARGB();
 			w++;
 		}
 	}
 }
 
-void pgsUtil::decodeRLEtoTIFF(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
-{
-	unsigned long ** pixels = new unsigned long * [ods.width];
-	for(int i = 0; i < ods.width; i++)
-	{
-		pixels[i] = new unsigned long[ods.height];
-	}
-	pgsUtil::decodeRLE(pixels, pds, ods);
-	int w, h;
-	unsigned long count = 0;
-	for(h = ods.height - 1; h >= 0; h--)
-	{
-		for(w=0; w < ods.width; w++)
-		{
-			out[count] = pixels[w][h];
-			count++;
-		}
-	}
-	//delete[] pixels;
-}
-
 void pgsUtil::decodeRLEtoBMP(unsigned long * out, paletteDefinitionSegment pds, objectDefinitionSegment ods)
 {
-	unsigned long ** pixels = new unsigned long * [ods.width];
-	for(int i = 0; i < ods.width; i++)
+	unsigned long ** pixels = new unsigned long * [ods.height];
+	for(int i = 0; i < ods.height; i++)
 	{
-		pixels[i] = new unsigned long[ods.height];
+		pixels[i] = new unsigned long[ods.width];
 	}
 	pgsUtil::decodeRLE(pixels, pds, ods);
 	int w, h;
 	unsigned long count = 0;
-	for(h = 0; h <= ods.height; h++)
+	for(h = ods.height-1; h > -1; h--)
 	{
 		for(w=0; w < ods.width; w++)
 		{
-			out[count] = pixels[w][h];
+			out[count] = pixels[h][w];
 			count++;
 		}
 	}

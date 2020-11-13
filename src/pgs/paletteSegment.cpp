@@ -11,14 +11,14 @@
 
 paletteSegment::paletteSegment()
 {
-	this->paletteEntryID = -1;
-	this->luminance = -1;
-	this->colorDiffRed = -1;
-	this->colorDiffBlue = -1;
-	this->transparency = -1;
-	this->r = -1;
-	this->g = -1;
-	this->b = -1;
+	this->paletteEntryID = 0;
+	this->luminance = -0;
+	this->colorDiffRed = 0;
+	this->colorDiffBlue = 0;
+	this->transparency = 0;
+	this->r = 0;
+	this->g = 0;
+	this->b = 0;
 }
 
 paletteSegment::paletteSegment(char * paletteEntryID, char * luminance, char * colorDiffRed, char * colorDiffBlue, char * transparency)
