@@ -52,9 +52,14 @@ std::ostringstream displaySegment::getTIFF()
 	unsigned long ** pixels = new unsigned long * [this->ods[0].height];
 	for(int i = 0; i < this->ods[0].height; i++){ pixels[i] = new unsigned long[this->ods[0].width]; }
 	pgsUtil::decodeRLE(pixels, this->pds[0], this->ods[0]);
+	char * temp = new char[this->ods[0].width*4];
 	for (int i = 0; i < ods[0].height; i++)
 	{
-	    memcpy(buffer, pixels[i], this->ods[0].width*4);
+		for(int j = 0; j < this->ods[0].width; j++)
+		{
+			bitmapUtil::numToChars(temp+j*4, pixels[i][j], 4);
+		}
+	    memcpy(buffer, temp, this->ods[0].width*4);
 	    if (TIFFWriteScanline(out, buffer, i) < 0) break;
 	}
 	TIFFClose(out);

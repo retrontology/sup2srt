@@ -6,8 +6,6 @@
  */
 #include <iostream>
 #include <string>
-#include <boost/program_options.hpp>
-#include "pgs/pgsUtil.h"
 #include "pgs/pgsParser.h"
 #include "srtUtil.h"
 
@@ -18,7 +16,7 @@ int main(int argc, char** argv)
 	pgsParser pgsp(filename);
 	//pgsp.dumpRLEs();
 	//pgsp.dumpBMPs();
-	//pgsp.dumpTIFFs();
+	pgsp.dumpTIFFs();
 	srtUtil::dumpTIFFStrings(&pgsp, "eng");
     return 0;
 }
