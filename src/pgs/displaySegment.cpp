@@ -62,7 +62,8 @@ std::ostringstream displaySegment::getTIFF()
 	    if (TIFFWriteScanline(out, buffer, i) < 0) break;
 	}
 	TIFFClose(out);
-	if (buffer){ _TIFFfree(buffer); }
+	_TIFFfree(buffer);
+
 	return tiffStream;
 }
 

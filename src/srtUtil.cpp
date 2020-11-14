@@ -54,7 +54,55 @@ void srtUtil::dumpTIFFStrings(pgsParser * pgs, const char* language)
 	}
 }
 
-std::ostringstream srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
+void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* language, bool verbose)
+{
+	std::ofstream out;
+	out.open(output);
+	tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
+	if (api->Init(NULL, language))
+	{
+		fprintf(stderr, "Could not initialize tesseract.\n");
+		exit(1);
+	}
+	int count = 1;
+	for(int i = 0; i < pgs->displaySegments.size(); i++)
+	{
+		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
+		{
+			std::string start = srtUtil::milliToSRTString(pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
+			std::string end = srtUtil::milliToSRTString(pgs->displaySegments[i+1].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
+			std::ostringstream data = pgs->displaySegments[i].getTIFF();
+			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
+			pixSetResolution(pix, 70, 70);
+			api->SetImage(pix);
+			std::string text(api->GetUTF8Text());
+			for(int i = 0; i < text.size(); i++)
+			{
+				switch (text[i])
+				{
+					case '|':
+					{
+						text[i] = 'I';
+						break;
+					}
+				}
+			}
+			std::ostringstream buffer;
+			buffer << std::to_string(count) << std::endl;
+			buffer << start + " --> " + end << std::endl;
+			buffer << text << std::endl << std::endl;
+			out << buffer.str();
+			if(verbose) std::cout << buffer.str();
+			pixDestroy(&pix);
+
+			count++;
+		}
+	}
+	out.close();
+	delete api;
+}
+
+std::ostringstream srtUtil::pgsToSRTStream(pgsParser * pgs, const char* language, bool verbose)
 {
 	std::ostringstream out;
 	tesseract::TessBaseAPI * api = new tesseract::TessBaseAPI();
@@ -89,6 +137,9 @@ std::ostringstream srtUtil::pgsToSRT(pgsParser * pgs, const char* language)
 			out << std::to_string(count) << std::endl;
 			out << start + " --> " + end << std::endl;
 			out << text << std::endl << std::endl;
+
+			pixDestroy(&pix);
+
 			count++;
 		}
 	}
