@@ -4,6 +4,11 @@
  *  Created on: Nov 1, 2020
  *      Author: blazer
  */
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -11,7 +16,7 @@
 #include "pgs/pgsParser.h"
 #include "srtUtil.h"
 
-std::string usage = "usage: sup2srt [-h] [-vd] -l language [-o output] input\n";
+std::string usage = "usage: sup2srt [-h] [-vd] [-t track] -l language [-o output] input\n";
 std::string input;
 std::string output = std::string("-1");
 std::string language = std::string("-1");
@@ -26,7 +31,7 @@ void parseArgs(int argc, char** argv)
 	extern char *optarg;
 	extern int optind;
 	int o;
-	while ((o = getopt (argc, argv, "hdl:o:v")) != -1)
+	while ((o = getopt (argc, argv, "hdl:ot:v")) != -1)
 	{
 		switch(o)
 		{
@@ -51,6 +56,11 @@ void parseArgs(int argc, char** argv)
 				output = std::string(optarg);
 				break;
 			}
+			case 't':
+			{
+				track = atoi(optarg);
+				break;
+			}
 			case 'v':
 			{
 				verbose = true;
@@ -71,11 +81,17 @@ void parseArgs(int argc, char** argv)
 	}
 	else
 	{
-		if(input.find(".") < input.length())
-		{
-			mkv = input.substr(input.find_last_of(".") + 1).compare("mkv") == 0;
-		}
 		input = std::string(argv[optind]);
+		if(input.find('.') < input.length())
+		{
+			mkv = input.substr(input.find_last_of('.') + 1).compare("mkv") == 0;
+		}
+	}
+	if(mkv && track == -1)
+	{
+		std::cerr << "Please supply a track index if you input an mkv file" << std::endl;
+		std::cerr << usage;
+		exit(1);
 	}
 	if(language.compare("-1") == 0)
 	{
@@ -87,9 +103,9 @@ void parseArgs(int argc, char** argv)
 	{
 		if(input.find(".") < input.length())
 		{
-			if(input.substr(input.find_last_of(".") + 1).compare("sup") == 0 || mkv)
+			if(input.substr(input.find_last_of('.') + 1).compare("sup") == 0 || mkv)
 			{
-				output = input.substr(0, input.find_last_of("."));
+				output = input.substr(0, input.find_last_of('.'));
 			}
 			else
 			{
@@ -104,11 +120,67 @@ void parseArgs(int argc, char** argv)
 	}
 }
 
+void tsToChar4(char * buffer, u_int32_t ts)
+{
+	buffer[0] = (ts & 0xFF000000) >> 24;
+	buffer[1] = (ts & 0x00FF0000) >> 16;
+	buffer[2] = (ts & 0x0000FF00) >> 8;
+	buffer[3] = ts & 0x000000FF;
+}
+
+std::ostringstream extractMKVTrack(std::string filename, int index)
+{
+	std::ostringstream out;
+	AVFormatContext * mkvFile = avformat_alloc_context();
+	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
+	avformat_find_stream_info(mkvFile,  NULL);
+	/*
+	AVCodec * codec = avcodec_find_decoder(mkvFile->streams[index]->codecpar->codec_id);
+	AVCodecContext * codecContext = avcodec_alloc_context3(codec);
+	avcodec_parameters_to_context(codecContext, mkvFile->streams[index]->codecpar);
+	avcodec_open2(codecContext, codec, NULL);
+	*/
+	AVPacket * packet = av_packet_alloc();
+	//AVFrame * frame = av_frame_alloc();
+	while (av_read_frame(mkvFile, packet) >= 0)
+	{
+		if (packet->stream_index == index)
+		{
+			/*
+			avcodec_send_packet(codecContext, packet);
+			avcodec_receive_frame(codecContext, frame);
+			out << std::string(reinterpret_cast<char *>(frame->data), frame->linesize[0]);
+			*/
+			out << "PG";
+			char * buffer = new char[4];
+			u_int32_t pts = packet->pts * 90;
+			u_int32_t dts = packet->dts * 90;
+			tsToChar4(buffer, pts);
+			out << std::string(buffer, 4);
+			tsToChar4(buffer, dts);
+			out << std::string(buffer, 4);
+			out << std::string(reinterpret_cast<char *>(packet->data), packet->size);
+		}
+	}
+	return out;
+}
+
 int main(int argc, char** argv)
 {
 	parseArgs(argc, argv);
-	pgsParser pgsp(input);
-	if(dump) pgsp.dumpTIFFs();
-	srtUtil::pgsToSRTFile(&pgsp, output.c_str(), language.c_str(), verbose);
+	if(mkv)
+	{
+		std::ofstream file;
+		file.open("test.sup", std::ifstream::binary);
+		file << extractMKVTrack(input, track).str();
+		file.close();
+	}
+	else
+	{
+		pgsParser pgsp(input);
+		if(dump) pgsp.dumpTIFFs();
+		srtUtil::pgsToSRTFile(&pgsp, output.c_str(), language.c_str(), verbose);
+	}
+
     return 0;
 }

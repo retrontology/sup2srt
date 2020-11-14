@@ -18,7 +18,7 @@ endif
 
 #LDFLAGS := -I /usr/include
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
-LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract
+LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract -lavcodec -lavformat -lavutil
 
 all:	sup2srt
 
