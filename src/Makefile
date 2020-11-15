@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-OBJS = sup2srt.o srtUtil.o
+OBJS = sup2srt.o srtUtil.o mkvUtil.o
 PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o paletteSegment.o paletteDefinitionSegment.o displaySegment.o
 PGS_PATH_OBJS = $(patsubst %.o,pgs/%.o,$(PGS_OBJS))
 SUB_DIRS = PGS
@@ -18,7 +18,7 @@ endif
 
 #LDFLAGS := -I /usr/include
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
-LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract
+LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract -lavcodec -lavformat -lavutil
 
 all:	sup2srt
 

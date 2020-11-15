@@ -9,6 +9,7 @@
 #include <string>
 #include <stdlib.h>
 #include <vector>
+#include <filesystem>
 #include "pgsUtil.h"
 #include "pgsParser.h"
 #include "pgsSegment.h"
@@ -21,24 +22,20 @@
 #include "objectDefinitionSegment.h"
 #include "displaySegment.h"
 
-pgsParser::pgsParser(std::string filename)
+pgsParser::pgsParser(std::stringstream * pgs)
 {
-	this->open(filename);
+	this->pgsData.clear();
+	this->pgsData << pgs->str();
+	this->pgsData.seekg(0);
+	this->parseAllSegments();
+	this->parseDisplaySegments();
 };
 
 pgsParser::pgsParser(){};
 
 pgsParser::~pgsParser()
 {
-	if (this->pgsData.is_open()) { this->pgsData.close(); }
-};
 
-void pgsParser::open(std::string filename)
-{
-	this->pgsData.open(filename, std::ifstream::binary);
-	this->parseAllSegments();
-	this->parseDisplaySegments();
-	this->pgsData.close();
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -250,9 +247,9 @@ void pgsParser::parseDisplaySegments()
 	}
 }
 
-void pgsParser::dumpTIFFs()
+void pgsParser::dumpTIFFs(std::string path)
 {
-	system("mkdir -p img");
+	system(std::string("mkdir -p \"" + path + "\"").c_str());
 	int count = 0;
 	for(int i = 0; i < this->displaySegments.size(); i++)
 	{
@@ -261,7 +258,7 @@ void pgsParser::dumpTIFFs()
 			std::ostringstream ss;
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
 			std::ofstream file;
-			file.open("img/" + ss.str() + ".tiff", std::ifstream::binary);
+			file.open(path + "/" + ss.str() + ".tiff", std::ifstream::binary);
 			std::ostringstream tiff = this->displaySegments[i].getTIFF();
 			file.write(tiff.str().c_str(), tiff.str().length());
 			file.close();

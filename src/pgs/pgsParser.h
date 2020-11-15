@@ -9,6 +9,7 @@
 #define PGSPARSER_H_
 
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <memory>
 #include <vector>
@@ -23,14 +24,13 @@
 class pgsParser
 {
 	private:
-		std::ifstream pgsData;
+		std::stringstream pgsData;
 	public:
 		std::vector<std::unique_ptr<pgsSegment>>  PGS_SEGMENTS;
 		std::vector<displaySegment> displaySegments;
         pgsParser();
-		pgsParser(std::string filename);
+		pgsParser(std::stringstream * pgs);
 		virtual ~pgsParser();
-		void open(std::string filename);
 		pgsSegmentHeader parseHeader(char * buffer);
 		void parseDisplaySegments();
 		void parseAllSegments();
@@ -39,8 +39,7 @@ class pgsParser
 		windowDefinitionSegment parseWDS(char * buffer, unsigned int segmentSize);
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
 		objectDefinitionSegment parseODS(char * buffer, unsigned long segmentSize);
-		void dumpBMPs();
-		void dumpTIFFs();
+		void dumpTIFFs(std::string path);
 		void dumpRLEs();
 		void printDisplaySegments();
 };
