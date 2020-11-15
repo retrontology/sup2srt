@@ -146,10 +146,7 @@ int main(int argc, char** argv)
 	pgsParser pgsp(&pgs);
 	if(dumpTIFF)
 	{
-		std::string path;
-		path = output.substr(0, output.find_last_of('.', output.find_last_of('.')-1)+1);
-		if(track != -1) path += std::to_string(track) + ".";
-		path += "TIFFs";
+		std::string path = output + ".TIFFs";;
 		std::cout << "TIFF files being written to: " + path << std::endl;
 		pgsp.dumpTIFFs(path);
 		std::cout << "TIFF files have been written" << std::endl;
