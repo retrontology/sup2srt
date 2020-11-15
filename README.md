@@ -29,4 +29,4 @@ usage: sup2srt [-h] [-vST] [-t track] -l language [-o output] input
 
 
 
-Requires: libtiff, libtiffxx, leptonica, tesseract
+Requires: libtiff, libtiffxx, leptonica, tesseract, libav/ffmpeg
