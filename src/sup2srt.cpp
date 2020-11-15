@@ -14,6 +14,7 @@ extern "C"
 #include <unistd.h>
 #include <cstdlib>
 #include "pgs/pgsParser.h"
+#include "pgs/pgsUtil.h"
 #include "srtUtil.h"
 
 std::string usage = "usage: sup2srt [-h] [-vd] [-t track] -l language [-o output] input\n";
@@ -134,32 +135,27 @@ std::ostringstream extractMKVTrack(std::string filename, int index)
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
-	/*
-	AVCodec * codec = avcodec_find_decoder(mkvFile->streams[index]->codecpar->codec_id);
-	AVCodecContext * codecContext = avcodec_alloc_context3(codec);
-	avcodec_parameters_to_context(codecContext, mkvFile->streams[index]->codecpar);
-	avcodec_open2(codecContext, codec, NULL);
-	*/
 	AVPacket * packet = av_packet_alloc();
-	//AVFrame * frame = av_frame_alloc();
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		if (packet->stream_index == index)
 		{
-			/*
-			avcodec_send_packet(codecContext, packet);
-			avcodec_receive_frame(codecContext, frame);
-			out << std::string(reinterpret_cast<char *>(frame->data), frame->linesize[0]);
-			*/
-			out << "PG";
-			char * buffer = new char[4];
-			u_int32_t pts = packet->pts * 90;
-			u_int32_t dts = packet->dts * 90;
-			tsToChar4(buffer, pts);
-			out << std::string(buffer, 4);
-			tsToChar4(buffer, dts);
-			out << std::string(buffer, 4);
-			out << std::string(reinterpret_cast<char *>(packet->data), packet->size);
+			int offset = 0;
+			while(offset < packet->size)
+			{
+				unsigned int segSize = pgsUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
+				out << "PG";
+				char * buffer = new char[4];
+				u_int32_t pts = packet->pts * 90;
+				u_int32_t dts = packet->dts * 90;
+				tsToChar4(buffer, pts);
+				out << std::string(buffer, 4);
+				tsToChar4(buffer, dts);
+				out << std::string(buffer, 4);
+				out << std::string(reinterpret_cast<char *>(packet->data + offset), segSize + 3);
+				offset += 3 + segSize;
+			}
+
 		}
 	}
 	return out;
