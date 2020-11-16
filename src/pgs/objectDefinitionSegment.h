@@ -19,7 +19,8 @@ public:
 	unsigned long objectDataLength;
 	unsigned int width;
 	unsigned int height;
-	char * data;
+	std::string data;
+	objectDefinitionSegment();
 	objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data);
 	virtual ~objectDefinitionSegment();
 };

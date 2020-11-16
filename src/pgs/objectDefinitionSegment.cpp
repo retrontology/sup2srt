@@ -9,6 +9,17 @@
 #include "pgsUtil.h"
 #include <cstring>
 
+objectDefinitionSegment::objectDefinitionSegment()
+{
+	this->objectID = 0;
+	this->objectVersionNumber = 0;
+	this->lastInSequenceFlag = 0;
+	this->objectDataLength = 0;
+	this->width = 0;
+	this->height = 0;
+	this->data = nullptr;
+}
+
 objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data)
 {
 	this->objectID = pgsUtil::char2ToInt(objectID);
@@ -17,11 +28,10 @@ objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectV
 	this->objectDataLength = pgsUtil::char3ToLong(objectDataLength);
 	this->width = pgsUtil::char2ToInt(width);
 	this->height = pgsUtil::char2ToInt(height);
-	this->data = new char[this->objectDataLength];
-	memcpy(this->data, data, this->objectDataLength);
+	this->data = std::string(data, this->objectDataLength);
 }
 
-objectDefinitionSegment::~objectDefinitionSegment() {
-	delete[] this->data;
-}
+objectDefinitionSegment::~objectDefinitionSegment()
+{
 
+}
