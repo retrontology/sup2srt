@@ -28,6 +28,7 @@ pgsParser::pgsParser(std::stringstream * pgs)
 	this->pgsData << pgs->str();
 	this->pgsData.seekg(0);
 	this->parseAllSegments();
+	this->pgsData.clear();
 	this->parseDisplaySegments();
 };
 

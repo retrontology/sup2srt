@@ -49,6 +49,9 @@ std::stringstream mkvUtil::extractMKVsup(std::string filename, int index)
 				offset += 3 + segSize;
 			}
 		}
+		av_packet_unref(packet);
 	}
+	avformat_close_input(&mkvFile);
+	av_packet_free(&packet);
 	return out;
 }
