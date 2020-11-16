@@ -36,7 +36,10 @@ pgsParser::pgsParser(){};
 
 pgsParser::~pgsParser()
 {
-
+	for(int i = 0; i < this->PGS_SEGMENTS.size(); i++)
+	{
+		this->PGS_SEGMENTS[i].reset();
+	}
 };
 
 std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
@@ -45,6 +48,7 @@ std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 	this->pgsData.read(buffer, 13);
 	pgsSegmentHeader header = this->parseHeader(buffer);
 	std::unique_ptr<pgsSegment> segment;
+	delete[] buffer;
 	buffer = new char[header.SEGMENT_SIZE];
 	if(header.SEGMENT_SIZE > 0) { this->pgsData.read(buffer, header.SEGMENT_SIZE); }
 	switch (header.SEGMENT_TYPE)
@@ -81,6 +85,7 @@ std::unique_ptr<pgsSegment> pgsParser::parseNextSegment()
 			break;
 		}
 	}
+	delete[] buffer;
 	segment->HEADER = header;
 	return segment;
 };

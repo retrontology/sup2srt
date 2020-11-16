@@ -22,6 +22,6 @@ objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectV
 }
 
 objectDefinitionSegment::~objectDefinitionSegment() {
-	// TODO Auto-generated destructor stub
+	delete[] this->data;
 }
 

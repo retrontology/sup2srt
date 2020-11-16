@@ -61,9 +61,13 @@ std::ostringstream displaySegment::getTIFF()
 	    memcpy(buffer, temp, this->ods[0].width*4);
 	    if (TIFFWriteScanline(out, buffer, i) < 0) break;
 	}
+	delete[] temp;
+	for(int i = 0; i < ods[0].height; i++)
+	{
+		delete[] pixels[i];
+	}
 	TIFFClose(out);
 	_TIFFfree(buffer);
-
 	return tiffStream;
 }
 

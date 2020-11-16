@@ -45,6 +45,7 @@ std::stringstream mkvUtil::extractMKVsup(std::string filename, int index)
 				out << std::string(buffer, 4);
 				tsToChar4(buffer, dts);
 				out << std::string(buffer, 4);
+				delete[] buffer;
 				out << std::string(reinterpret_cast<char *>(packet->data + offset), segSize + 3);
 				offset += 3 + segSize;
 			}
