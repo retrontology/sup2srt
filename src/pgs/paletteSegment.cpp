@@ -73,3 +73,8 @@ unsigned long paletteSegment::getABGR()
 	return this->r | this->g << 8 | this->b << 16 | this->transparency << 24;
 }
 
+unsigned long paletteSegment::getAGGG()
+{
+	return this->luminance | this->luminance << 8 | this->luminance << 16 | this->transparency << 24;
+}
+

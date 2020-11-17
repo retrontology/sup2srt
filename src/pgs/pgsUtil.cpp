@@ -36,7 +36,7 @@ double pgsUtil::ptsToMilli(unsigned long in)
 	return double(in/90);
 }
 
-void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods)
+void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods, bool gray)
 {
 	int w = 0, h = 0;
 	for(int i = 0; i < ods.objectDataLength; i++)
@@ -59,7 +59,8 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					{
 						for(unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1]); j++)
 						{
-							pixels[h][w] = pds.paletteSegments[0].getARGB();
+							if(gray) pds.paletteSegments[0].getAGGG();
+							else pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=1;
@@ -70,7 +71,8 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8;
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[h][w] = pds.paletteSegments[0].getARGB();
+							if(gray) pixels[h][w] = pds.paletteSegments[0].getAGGG();
+							else pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
 						i+=2;
@@ -82,7 +84,8 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
 
-							pixels[h][w] = pds.paletteSegments[color].getARGB();
+							if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+							else pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
 						i+=2;
@@ -94,7 +97,8 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						char color = pgsUtil::cleanChar(ods.data[i+3]);
 						for(unsigned int j = 0; j < count; j++)
 						{
-							pixels[h][w] = pds.paletteSegments[color].getARGB();
+							if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+							else pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
 						i+=3;
@@ -106,7 +110,8 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 		else
 		{
 			char color = pgsUtil::cleanChar(ods.data[i]);
-			pixels[h][w] = pds.paletteSegments[color].getARGB();
+			if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+			else pixels[h][w] = pds.paletteSegments[color].getARGB();
 			w++;
 		}
 	}

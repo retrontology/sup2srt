@@ -39,7 +39,7 @@ class pgsParser
 		windowDefinitionSegment parseWDS(char * buffer, unsigned int segmentSize);
 		paletteDefinitionSegment parsePDS(char * buffer, unsigned int segmentSize);
 		objectDefinitionSegment parseODS(char * buffer, unsigned long segmentSize);
-		void dumpTIFFs(std::string path);
+		void dumpTIFFs(std::string path, bool gray = false);
 		void dumpRLEs();
 		void printDisplaySegments();
 };

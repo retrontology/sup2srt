@@ -31,7 +31,7 @@ public:
 					std::vector<objectDefinitionSegment> ods,
 					pgsSegment end);
 	virtual ~displaySegment();
-	std::ostringstream getTIFF();
+	std::ostringstream getTIFF(bool gray = false);
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */

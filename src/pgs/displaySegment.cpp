@@ -34,7 +34,7 @@ displaySegment::~displaySegment() {
 
 }
 
-std::ostringstream displaySegment::getTIFF()
+std::ostringstream displaySegment::getTIFF(bool gray)
 {
 	std::ostringstream tiffStream;
 	TIFF* out = TIFFStreamOpen(std::to_string(this->ods[0].objectID).c_str(), &tiffStream);
@@ -45,6 +45,8 @@ std::ostringstream displaySegment::getTIFF()
 	TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
 	TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+	TIFFSetField(out, TIFFTAG_XRESOLUTION, 300);
+	TIFFSetField(out, TIFFTAG_YRESOLUTION, 300);
 
 	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, this->ods[0].width*4);
 	unsigned char* buffer = (unsigned char*)_TIFFmalloc(this->ods[0].width*4);

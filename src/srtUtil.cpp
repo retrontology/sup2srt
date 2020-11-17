@@ -50,9 +50,12 @@ void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* lang
 			std::string end = srtUtil::milliToSRTString(pgs->displaySegments[i+1].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
 			std::ostringstream data = pgs->displaySegments[i].getTIFF();
 			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
+			data.clear();
 			pixSetResolution(pix, 70, 70);
 			api->SetImage(pix);
-			std::string text(api->GetUTF8Text());
+			char * tessString = api->GetUTF8Text();
+			std::string text(tessString);
+			delete[] tessString;
 			for(int i = 0; i < text.size(); i++)
 			{
 				switch (text[i])
