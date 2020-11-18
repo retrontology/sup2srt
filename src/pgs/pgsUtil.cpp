@@ -59,7 +59,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					{
 						for(unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1]); j++)
 						{
-							if(gray) pds.paletteSegments[0].getAGGG();
+							if(gray) pixels[h][w] = pds.paletteSegments[0].getGray();
 							else pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
@@ -71,7 +71,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8;
 						for(unsigned int j = 0; j < count; j++)
 						{
-							if(gray) pixels[h][w] = pds.paletteSegments[0].getAGGG();
+							if(gray) pixels[h][w] = pds.paletteSegments[0].getGray();
 							else pixels[h][w] = pds.paletteSegments[0].getARGB();
 							w++;
 						}
@@ -84,7 +84,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
 
-							if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+							if(gray) pixels[h][w] = pds.paletteSegments[color].getGray();
 							else pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
@@ -97,7 +97,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 						char color = pgsUtil::cleanChar(ods.data[i+3]);
 						for(unsigned int j = 0; j < count; j++)
 						{
-							if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+							if(gray) pixels[h][w] = pds.paletteSegments[color].getGray();
 							else pixels[h][w] = pds.paletteSegments[color].getARGB();
 							w++;
 						}
@@ -110,7 +110,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 		else
 		{
 			char color = pgsUtil::cleanChar(ods.data[i]);
-			if(gray) pixels[h][w] = pds.paletteSegments[color].getAGGG();
+			if(gray) pixels[h][w] = pds.paletteSegments[color].getGray();
 			else pixels[h][w] = pds.paletteSegments[color].getARGB();
 			w++;
 		}

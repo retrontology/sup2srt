@@ -32,6 +32,7 @@ public:
 					pgsSegment end);
 	virtual ~displaySegment();
 	std::ostringstream getTIFF(bool gray = false);
+	std::ostringstream getClearTIFF();
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */

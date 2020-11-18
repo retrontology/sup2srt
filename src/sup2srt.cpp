@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 	{
 		std::string path = output + ".TIFFs";;
 		std::cout << "TIFF files being written to: " + path << std::endl;
-		pgsp.dumpTIFFs(path);
+		pgsp.dumpTIFFs(path, true);
 		std::cout << "TIFF files have been written" << std::endl;
 	}
 	std::cout << "Starting OCR on extracted images..." << std::endl;
