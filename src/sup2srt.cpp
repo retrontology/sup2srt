@@ -1,9 +1,3 @@
-/*
- * sup2srt.cpp
- *
- *  Created on: Nov 1, 2020
- *      Author: blazer
- */
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -70,6 +64,7 @@ void parseArgs(int argc, char** argv)
 			}
 			case '?':
 			{
+				std::cerr << "Did not understand argument: " << o <<std::endl;
 				std::cerr << usage;
 				exit(1);
 			}

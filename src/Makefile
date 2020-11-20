@@ -4,6 +4,7 @@ OBJS = sup2srt.o srtUtil.o mkvUtil.o
 PGS_OBJS= pgsParser.o pgsSegment.o pgsSegmentHeader.o presentationCompositionSegment.o pgsUtil.o compositionObject.o windowDefinitionSegment.o windowSegment.o objectDefinitionSegment.o paletteSegment.o paletteDefinitionSegment.o displaySegment.o
 PGS_PATH_OBJS = $(patsubst %.o,pgs/%.o,$(PGS_OBJS))
 SUB_DIRS = PGS
+DISK = sup2disk.o mkvUtil.o 
 
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
@@ -20,10 +21,13 @@ endif
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 LIBFLAGS := -ltiff -ltiffxx -llept -ltesseract -lavcodec -lavformat -lavutil
 
-all:	sup2srt
+all:	sup2srt sup2disk
 
 sup2srt:	$(SUB_DIRS) $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) $(PGS_PATH_OBJS) $(BMP_PATH_OBJS) -o $@ ${LIBFLAGS}
+	$(CXX) $(LDFLAGS) $(OBJS) $(PGS_PATH_OBJS) -o $@ ${LIBFLAGS}
+
+sup2disk:	$(SUB_DIRS) $(DISK)
+	$(CXX) $(LDFLAGS) ${DISK} $(PGS_PATH_OBJS) -o $@ ${LIBFLAGS}
 	
 %.o:	$(PROJECT_ROOT)%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $< ${LIBFLAGS}
@@ -36,4 +40,4 @@ PGS:
 	
 clean:
 	$(MAKE) -C pgs clean
-	rm -fr sup2srt $(OBJS)
+	rm -fr sup2srt sup2disk $(OBJS) $(DISK)
