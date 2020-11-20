@@ -10,26 +10,6 @@ std::string usage = "";
 std::string input;
 std::vector<unsigned int> tracks;
 
-std::vector<unsigned int> parseTracks(std::string trackString)
-{
-	std::vector<unsigned int> out;
-	if(trackString.find(',') < trackString.length())
-	{
-		std::stringstream stream(trackString);
-		while(stream.good())
-		{
-			std::string substr;
-			getline(stream, substr, ',');
-			out.push_back(atoi(substr.c_str()));
-		}
-	}
-	else
-	{
-		out.push_back(atoi(trackString.c_str()));
-	}
-	return out;
-}
-
 void parseArgs(int argc, char** argv)
 {
 	extern char *optarg;
@@ -48,7 +28,7 @@ void parseArgs(int argc, char** argv)
 			case 't':
 			{
 				std::string trackString(optarg);
-				tracks = parseTracks(trackString);
+				tracks = mkvUtil::parseTracks(trackString);
 				break;
 			}
 			case '?':
@@ -80,5 +60,6 @@ void parseArgs(int argc, char** argv)
 int main(int argc, char** argv)
 {
 	parseArgs(argc, argv);
-	mkvUtil::dumpAllMKVsup(input);
+	if(tracks.size() == 0) mkvUtil::dumpAllMKVsup(input);
+	else mkvUtil::dumpSelectMKVsup(input, tracks);
 }

@@ -26,6 +26,8 @@ namespace mkvUtil {
 	std::stringstream extractMKVsup(std::string filename, int index);
 	std::vector<supStream> extractAllMKVsup(std::string filename);
 	void dumpAllMKVsup(std::string filename);
+	void dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
+	std::vector<unsigned int> parseTracks(std::string trackString);
 	std::string formatPacket(AVPacket* packet);
 };
 

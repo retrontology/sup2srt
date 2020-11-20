@@ -86,6 +86,40 @@ std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
 	return out;
 }
 
+void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
+{
+	std::map<unsigned int, std::ofstream> streams;
+	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
+	AVFormatContext * mkvFile = avformat_alloc_context();
+	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
+	avformat_find_stream_info(mkvFile,  NULL);
+	for(unsigned int i = 0; i < mkvFile->nb_streams; i++)
+	{
+		if(std::find(tracks.begin(), tracks.end(), i) != tracks.end())
+		{
+			AVDictionaryEntry* entry = NULL;
+			entry = av_dict_get(mkvFile->streams[i]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
+			std::string language(entry->value);
+			entry = av_dict_get(mkvFile->streams[i]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
+			std::string title(entry->value);
+			std::string outname = basename + std::to_string(i) + "." + title + "." + language + ".sup";
+			streams.insert(std::pair<unsigned int, std::ofstream>(i, std::ofstream(outname, std::ofstream::binary)));
+		}
+	}
+	AVPacket * packet = av_packet_alloc();
+	while (av_read_frame(mkvFile, packet) >= 0)
+	{
+		if (std::find(tracks.begin(), tracks.end(), packet->stream_index) != tracks.end())
+		{
+			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
+		}
+		av_packet_unref(packet);
+	}
+	avformat_close_input(&mkvFile);
+	av_packet_free(&packet);
+	for(std::map<unsigned int, std::ofstream>::iterator it = streams.begin(); it != streams.end(); it++) it->second.close();
+}
+
 void mkvUtil::dumpAllMKVsup(std::string filename)
 {
 	std::map<unsigned int, std::ofstream> streams;
@@ -118,6 +152,26 @@ void mkvUtil::dumpAllMKVsup(std::string filename)
 	avformat_close_input(&mkvFile);
 	av_packet_free(&packet);
 	for(std::map<unsigned int, std::ofstream>::iterator it = streams.begin(); it != streams.end(); it++) it->second.close();
+}
+
+std::vector<unsigned int> mkvUtil::parseTracks(std::string trackString)
+{
+	std::vector<unsigned int> out;
+	if(trackString.find(',') < trackString.length())
+	{
+		std::stringstream stream(trackString);
+		while(stream.good())
+		{
+			std::string substr;
+			getline(stream, substr, ',');
+			out.push_back(atoi(substr.c_str()));
+		}
+	}
+	else
+	{
+		out.push_back(atoi(trackString.c_str()));
+	}
+	return out;
 }
 
 std::string mkvUtil::formatPacket(AVPacket* packet)
