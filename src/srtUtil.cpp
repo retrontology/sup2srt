@@ -51,7 +51,12 @@ void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* lang
 			std::ostringstream data = pgs->displaySegments[i].getClearTIFF();
 			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
 			data.clear();
-			pixSetResolution(pix, 70, 70);
+			//pixContrastTRC(prepix, prepix, 0.5);
+			//Pix * pix = pixUnsharpMasking(prepix, 3, .5);
+			pixSetResolution(pix, 300, 300);
+			//pixDestroy(&prepix);
+			//setLeptDebugOK(1);
+			//pixDisplay(pix, 0, 0);
 			api->SetImage(pix);
 			char * tessString = api->GetUTF8Text();
 			std::string text(tessString);

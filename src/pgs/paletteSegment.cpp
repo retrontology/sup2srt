@@ -19,6 +19,7 @@ paletteSegment::paletteSegment()
 	this->r = 0;
 	this->g = 0;
 	this->b = 0;
+	this->gray = 0;
 }
 
 paletteSegment::paletteSegment(char * paletteEntryID, char * luminance, char * colorDiffRed, char * colorDiffBlue, char * transparency)
@@ -31,6 +32,7 @@ paletteSegment::paletteSegment(char * paletteEntryID, char * luminance, char * c
 	this->r = this->calcRed(this->luminance, this->colorDiffBlue, this->colorDiffRed);
 	this->g = this->calcGreen(this->luminance, this->colorDiffBlue, this->colorDiffRed);
 	this->b = this->calcBlue(this->luminance, this->colorDiffBlue, this->colorDiffRed);
+	this->gray = this->calcGray(this->transparency, this->luminance);
 }
 
 paletteSegment::~paletteSegment() {
@@ -58,6 +60,19 @@ unsigned char paletteSegment::calcBlue(unsigned char Y, unsigned char Cb, unsign
 	return b;
 }
 
+unsigned long paletteSegment::calcGray(unsigned char transparency, unsigned char luminance)
+{
+	if(transparency < 128 || luminance < 64)
+	{
+		return 255 | 255 << 8 | 255 << 16;
+	}
+	else
+	{
+		//return luminance | luminance << 8 | luminance << 16;
+		return 0;
+	}
+}
+
 unsigned long paletteSegment::getRGBA()
 {
 	return this->transparency | this->b << 8 | this->g << 16 | this->r << 24;
@@ -71,17 +86,5 @@ unsigned long paletteSegment::getARGB()
 unsigned long paletteSegment::getABGR()
 {
 	return this->r | this->g << 8 | this->b << 16 | this->transparency << 24;
-}
-
-unsigned long paletteSegment::getGray()
-{
-	if(this->transparency < 128)
-	{
-		return 255 | 255 << 8 | 255 << 16;
-	}
-	else
-	{
-		return this->luminance | this->luminance << 8 | this->luminance << 16;
-	}
 }
 
