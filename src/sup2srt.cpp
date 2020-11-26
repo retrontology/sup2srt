@@ -101,6 +101,7 @@ void parseArgs(int argc, char** argv)
 		if(input.find(".") < input.length() && (input.substr(input.find_last_of('.') + 1).compare("sup") == 0 || mkv))
 		{
 			output = input.substr(0, input.find_last_of('.'));
+			if(mkv) output += "." + std::to_string(track);
 		}
 		else
 		{
