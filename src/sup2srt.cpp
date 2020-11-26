@@ -6,11 +6,12 @@
 #include "srtUtil.h"
 #include "mkvUtil.h"
 
-std::string usage = "usage: sup2srt [-h] [-vST] [-t track] -l language [-o output] input\n\n\t-h:\n\t\tDisplay this help menu\n\n\t-v:\n\t\tVerbose - output srt as it's being written\n\n\t-T:\n\t\tDump TIFF images extracted from the PGS file to disk\n\n\t-S:\n\t\tWrite SUP file extracted from mkv to disk (only used when an mkv is input)\n\n\t-t track:\n\t\tSelect track to extract from mkv (must be used when an mkv is input)\n\n\t-l language:\n\t\tSelect Tesseract language according to ISO-3166\n\n\t-o:\n\t\tOutput file (if not specified the file will be output to the same dir as the input).\n\n\tinput:\n\t\tfile to parse SUP stream. Can either be a binary SUP file or an mkv. If the file doesn't end in .mkv, it will assume it is a binary SUP file.\n\n";
+std::string usage = "usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input\n\n\t-h:\n\t\tDisplay this help menu\n\n\t-v:\n\t\tVerbose - output srt as it's being written\n\n\t-T:\n\t\tDump TIFF images extracted from the PGS file to disk\n\n\t-S:\n\t\tWrite SUP file extracted from mkv to disk (only used when an mkv is input)\n\n\t-t track:\n\t\tSelect track to extract from mkv (must be used when an mkv is input)\n\n\t-l language:\n\t\tSelect Tesseract language according to ISO-3166. If not specified and an mkv is input, the program will try to use the track metadata. Must be used when a binary SUP file is input\n\n\t-o:\n\t\tOutput file (if not specified the file will be output to the same dir as the input).\n\n\tinput:\n\t\tfile to parse SUP stream. Can either be a binary SUP file or an mkv. If the file doesn't end in .mkv, it will assume it is a binary SUP file.\n\n";
 std::string input;
 std::string output = std::string("-1");
 std::string language = std::string("-1");
-int track = -1;
+std::vector<unsigned int> tracks;
+//int track = -1;
 bool verbose = false;
 bool dumpTIFF = false;
 bool dumpSUP = false;
@@ -54,7 +55,9 @@ void parseArgs(int argc, char** argv)
 			}
 			case 't':
 			{
-				track = atoi(optarg);
+				//track = atoi(optarg);
+				std::string trackString(optarg);
+				tracks = mkvUtil::parseTracks(trackString);
 				break;
 			}
 			case 'v':
@@ -84,24 +87,23 @@ void parseArgs(int argc, char** argv)
 			mkv = input.substr(input.find_last_of('.') + 1).compare("mkv") == 0;
 		}
 	}
-	if(mkv && track == -1)
+	if(mkv && tracks.size() == 0)
 	{
 		std::cerr << "Please supply a track index if you input an mkv file" << std::endl;
 		std::cerr << usage;
 		exit(1);
 	}
-	if(language.compare("-1") == 0)
+	if(language.compare("-1") == 0 && !mkv)
 	{
 		std::cerr << "Please supply a language according to ISO-3166" << std::endl;
 		std::cerr << usage;
 		exit(1);
 	}
-	if(output.compare("-1") == 0)
+	if(output.compare("-1") == 0 && !mkv)
 	{
-		if(input.find(".") < input.length() && (input.substr(input.find_last_of('.') + 1).compare("sup") == 0 || mkv))
+		if(input.find(".") < input.length() && input.substr(input.find_last_of('.') + 1).compare("sup") == 0)
 		{
 			output = input.substr(0, input.find_last_of('.'));
-			if(mkv) output += "." + std::to_string(track);
 		}
 		else
 		{
@@ -114,41 +116,63 @@ void parseArgs(int argc, char** argv)
 int main(int argc, char** argv)
 {
 	parseArgs(argc, argv);
-	std::stringstream pgs;
 	if(mkv)
 	{
-		std::cout << "Extracting SUP stream from mkv..." << std::endl;
-		pgs << mkvUtil::extractMKVsup(input, track).str();
-		std::cout << "Stream is extracted" << std::endl;
-		if(dumpSUP)
+		std::string basename = input.substr(0, input.find_last_of('.')+1);
+		std::cout << "Extracting SUP stream";
+		std::cout << (tracks.size() > 1 ? "s" : "");
+		std::cout << " from mkv..." << std::endl;
+		std::vector<supStream> streams = mkvUtil::extractSelectMKVsup(input, tracks);
+		std::cout << "Stream";
+		std::cout << (tracks.size() > 1 ? "s" : "");
+		std::cout << " extracted" << std::endl;
+		for(int i = 0; i < streams.size(); i++)
 		{
-			std::ofstream file;
-			std::string supFile = input.substr(0, input.find_last_of('.')) + "." + std::to_string(track) + ".sup";
-			file.open(supFile, std::ifstream::binary);
-			file << pgs.str();
-			file.close();
-			std::cout << "SUP file written to: " + supFile << std::endl;
+			std::string lang = language.compare("-1") == 0 ? streams[i].language : language;
+			std::stringstream pgs;
+			pgs << streams[i].data;
+			pgsParser pgsp(&pgs);
+			if(dumpSUP)
+			{
+				std::ofstream file;
+				std::string filename = basename + std::to_string(streams[i].track) + "." + lang + ".sup";
+				file.open(filename, std::ifstream::binary);
+				file << streams[i].data;
+				file.close();
+				std::cout << "SUP file written to: " + filename << std::endl;
+			}
+			if(dumpTIFF)
+			{
+				std::string path = basename + std::to_string(streams[i].track) + "." + lang + ".sup.TIFFs";;
+				std::cout << "TIFF files being written to: " + path << std::endl;
+				pgsp.dumpTIFFs(path);
+				std::cout << "TIFF files have been written" << std::endl;
+			}
+			std::cout << "Starting OCR on extracted images..." << std::endl;
+			std::string filename = basename + std::to_string(streams[i].track) + "." + lang + ".srt";
+			srtUtil::pgsToSRTFile(&pgsp, filename.c_str(), lang.c_str(), verbose);
+			std::cout << "OCR finished and SRT written to: " + filename << std::endl;
 		}
 	}
 	else
 	{
+		std::stringstream pgs;
 		std::cout << "Reading SUP from file..." << std::endl;
-		std::ifstream file;
-		file.open(input, std::ifstream::binary);
+		std::ifstream file(input, std::ifstream::binary);
 		pgs << file.rdbuf();
 		file.close();
 		std::cout << "SUP file has been read" << std::endl;
+		pgsParser pgsp(&pgs);
+		if(dumpTIFF)
+		{
+			std::string path = input + ".TIFFs";;
+			std::cout << "TIFF files being written to: " + path << std::endl;
+			pgsp.dumpTIFFs(path);
+			std::cout << "TIFF files have been written" << std::endl;
+		}
+		std::cout << "Starting OCR on extracted images..." << std::endl;
+		srtUtil::pgsToSRTFile(&pgsp, output.c_str(), language.c_str(), verbose);
+		std::cout << "OCR finished and SRT written to: " + output << std::endl;
 	}
-	pgsParser pgsp(&pgs);
-	if(dumpTIFF)
-	{
-		std::string path = output + ".TIFFs";;
-		std::cout << "TIFF files being written to: " + path << std::endl;
-		pgsp.dumpTIFFs(path, true);
-		std::cout << "TIFF files have been written" << std::endl;
-	}
-	std::cout << "Starting OCR on extracted images..." << std::endl;
-	srtUtil::pgsToSRTFile(&pgsp, output.c_str(), language.c_str(), verbose);
-	std::cout << "OCR finished and SRT written to: " + output << std::endl;
     return 0;
 }

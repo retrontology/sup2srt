@@ -21,12 +21,15 @@ struct supStream
 	virtual ~supStream();
 };
 
-namespace mkvUtil {
+namespace mkvUtil
+{
 	void tsToChar4(char * buffer, u_int32_t ts);
 	std::stringstream extractMKVsup(std::string filename, int index);
+	std::vector<supStream> extractSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
 	std::vector<supStream> extractAllMKVsup(std::string filename);
 	void dumpAllMKVsup(std::string filename);
 	void dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
+	std::string cleanLangISO(std::string in);
 	std::vector<unsigned int> parseTracks(std::string trackString);
 	std::string formatPacket(AVPacket* packet);
 };
