@@ -1,5 +1,9 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+ifeq ($(PREFIX),)
+    PREFIX := /usr/local
+endif
+
 ifeq ($(BUILD_MODE),debug)
 	CFLAGS += -g
 else ifeq ($(BUILD_MODE),run)
@@ -14,12 +18,20 @@ endif
 MAKEFLAGS += --jobs=8
 #CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
-all:	sup2srt
+all:	sup2srt sup2disk
+
+install:	sup2srt
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install sup2srt $(DESTDIR)$(PREFIX)/bin
 
 sup2srt:
-	$(MAKE) -C src
+	$(MAKE) -C src sup2srt
 	mv src/sup2srt .
+
+sup2disk:
+	$(MAKE) -C src sup2disk
+	mv src/sup2disk .
 	
 clean:
 	$(MAKE) -C src clean
-	rm -fr sup2srt img
+	rm -fr sup2srt sup2disk

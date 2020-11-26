@@ -80,7 +80,7 @@ std::ostringstream displaySegment::getClearTIFF()
 	int samples = 3;
 	std::ostringstream tiffStream;
 	TIFF* out = TIFFStreamOpen(std::to_string(this->ods[0].objectID).c_str(), &tiffStream);
-	TIFFSetField (out, TIFFTAG_IMAGEWIDTH, this->ods[0].width+4);
+	TIFFSetField(out, TIFFTAG_IMAGEWIDTH, this->ods[0].width+4);
 	TIFFSetField(out, TIFFTAG_IMAGELENGTH, this->ods[0].height+4);
 	TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, samples);
 	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);
