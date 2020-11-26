@@ -9,6 +9,7 @@
 #define SRC_SRTUTIL_H_
 
 #include "pgs/pgsParser.h"
+#include <tesseract/baseapi.h>
 #include <sstream>
 
 namespace srtUtil
@@ -16,6 +17,7 @@ namespace srtUtil
 	std::string milliToSRTString(double milli);
 	void pgsToSRTFile(pgsParser * pgs, const char* output, const char* language, bool verbose);
 	std::ostringstream pgsToSRTStream(pgsParser * pgs, const char* language, bool verbose);
+	std::string readFormattedString(tesseract::TessBaseAPI * api);
 };
 
 #endif /* SRC_SRTUTIL_H_ */
