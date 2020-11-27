@@ -13,7 +13,7 @@ usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input
 		Dump TIFF images extracted from the PGS file to disk
 
 	-S:
-		Write SUP file extracted from mkv to disk (only used when an mkv is input)
+		Write SUP file extracted from mkv to disk. Can be multiple tracks separated by a comma (only used when an mkv is input)
 
 	-t track:
 		Select track to extract from mkv (must be used when an mkv is input)
