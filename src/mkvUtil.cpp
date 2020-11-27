@@ -203,8 +203,20 @@ std::vector<unsigned int> mkvUtil::parseTracks(std::string trackString)
 		while(stream.good())
 		{
 			std::string substr;
-			getline(stream, substr, ',');
-			out.push_back(atoi(substr.c_str()));
+			std::getline(stream, substr, ',');
+			if(substr.find('-') < substr.length())
+			{
+				std::stringstream range(substr);
+				std::string start;
+				std::string end;
+				std::getline(range, start, '-');
+				std::getline(range, end);
+				for(unsigned int i = atoi(start.c_str()); i <= atoi(end.c_str()); i++)
+				{
+					out.push_back(i);
+				}
+			}
+			else out.push_back(atoi(substr.c_str()));
 		}
 	}
 	else
