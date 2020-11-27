@@ -1,7 +1,7 @@
 # sup2srt
 Convert SUP graphic subtitles to text-based SRT format with Tesseract.
 
-usage: sup2srt [-h] [-vST] [-t track] -l language [-o output] input
+usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input
 
 	-h:
 		Display this help menu
@@ -13,13 +13,13 @@ usage: sup2srt [-h] [-vST] [-t track] -l language [-o output] input
 		Dump TIFF images extracted from the PGS file to disk
 
 	-S:
-		Write SUP file extracted from mkv to disk (only used when an mkv is input)
+		Write SUP file extracted from mkv to disk. Can be multiple tracks separated by a comma (only used when an mkv is input)
 
 	-t track:
 		Select track to extract from mkv (must be used when an mkv is input)
 
 	-l language:
-		Select Tesseract language according to ISO-3166
+		Select Tesseract language according to ISO-3166. If not specified and an mkv is input, the program will try to use the track metadata. Must be used when a binary SUP file is input
 
 	-o:
 		Output file (if not specified the file will be output to the same dir as the input).

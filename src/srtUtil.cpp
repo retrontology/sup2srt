@@ -65,7 +65,6 @@ void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* lang
 			out << buffer.str();
 			if(verbose) std::cout << buffer.str();
 			pixDestroy(&pix);
-
 			count++;
 		}
 	}
