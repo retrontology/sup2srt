@@ -4,6 +4,29 @@
 #include <utility>
 #include <iostream>
 
+std::map<std::string,std::string> isoMap::map
+{
+	{"tib", "bod"},
+	{"cze", "ces"},
+	{"wel", "cym"},
+	{"gre", "ell"},
+	{"baq", "eus"},
+	{"per", "fas"},
+	{"fre", "fra"},
+	{"geo", "kat"},
+	{"ger", "deu"},
+	{"arm", "hye"},
+	{"ice", "isl"},
+	{"mac", "mkd"},
+	{"mao", "mri"},
+	{"may", "msa"},
+	{"bur", "mya"},
+	{"dut", "nld"},
+	{"rum", "ron"},
+	{"slo", "slk"},
+	{"alb", "sqi"},
+	{"chi", "zho"},
+};
 
 supStream::supStream()
 {
@@ -32,29 +55,18 @@ void mkvUtil::tsToChar4(char * buffer, u_int32_t ts)
 	buffer[3] = ts & 0x000000FF;
 }
 
-std::stringstream mkvUtil::extractMKVsup(std::string filename, int index)
+
+std::stringstream mkvUtil::extractSingleMKVsup(std::string filename, int index)
 {
 	std::stringstream out;
-	AVFormatContext * mkvFile = avformat_alloc_context();
-	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
-	avformat_find_stream_info(mkvFile,  NULL);
-	AVPacket * packet = av_packet_alloc();
-	while (av_read_frame(mkvFile, packet) >= 0)
-	{
-		if (packet->stream_index == index)
-		{
-			out << mkvUtil::formatPacket(packet);
-		}
-		av_packet_unref(packet);
-	}
-	avformat_close_input(&mkvFile);
-	av_packet_free(&packet);
+	std::vector<unsigned int> tracks{(unsigned int)(index)};
+	out << mkvUtil::extractSelectMKVsup(filename, tracks)[0].data;
 	return out;
 }
 
 std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
 {
-	std::map<unsigned int, supStream> streams;
+	std::vector<unsigned int> tracks;
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
@@ -62,28 +74,11 @@ std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
 	{
 		if(mkvFile->streams[i]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
 		{
-			AVDictionaryEntry* entry = NULL;
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string language(entry->value);
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string title(entry->value);
-			streams.insert(std::pair<unsigned int, supStream>(i, supStream(i, language, title)));
+			tracks.push_back(i);
 		}
-	}
-	AVPacket * packet = av_packet_alloc();
-	while (av_read_frame(mkvFile, packet) >= 0)
-	{
-		if (mkvFile->streams[packet->stream_index]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
-		{
-			streams[packet->stream_index].data += mkvUtil::formatPacket(packet);
-		}
-		av_packet_unref(packet);
 	}
 	avformat_close_input(&mkvFile);
-	av_packet_free(&packet);
-	std::vector<supStream> out;
-	for(std::map<unsigned int, supStream>::iterator it = streams.begin(); it != streams.end(); it++) out.push_back(it->second);
-	return out;
+	return mkvUtil::extractSelectMKVsup(filename, tracks);
 }
 
 std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
@@ -125,44 +120,16 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 	return out;
 }
 
-void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
+void mkvUtil::dumpSingleMKVsup(std::string filename, int index)
 {
-	std::map<unsigned int, std::ofstream> streams;
-	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
-	AVFormatContext * mkvFile = avformat_alloc_context();
-	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
-	avformat_find_stream_info(mkvFile,  NULL);
-	for(unsigned int i = 0; i < mkvFile->nb_streams; i++)
-	{
-		if(std::find(tracks.begin(), tracks.end(), i) != tracks.end())
-		{
-			AVDictionaryEntry* entry = NULL;
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string language(entry->value);
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string title(entry->value);
-			std::string outname = basename + std::to_string(i) + "." + title + "." + language + ".sup";
-			streams.insert(std::pair<unsigned int, std::ofstream>(i, std::ofstream(outname, std::ofstream::binary)));
-		}
-	}
-	AVPacket * packet = av_packet_alloc();
-	while (av_read_frame(mkvFile, packet) >= 0)
-	{
-		if (std::find(tracks.begin(), tracks.end(), packet->stream_index) != tracks.end())
-		{
-			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
-		}
-		av_packet_unref(packet);
-	}
-	avformat_close_input(&mkvFile);
-	av_packet_free(&packet);
-	for(std::map<unsigned int, std::ofstream>::iterator it = streams.begin(); it != streams.end(); it++) it->second.close();
+	std::stringstream out;
+	std::vector<unsigned int> tracks{(unsigned int)(index)};
+	out << mkvUtil::extractSelectMKVsup(filename, tracks)[0].data;
 }
 
 void mkvUtil::dumpAllMKVsup(std::string filename)
 {
-	std::map<unsigned int, std::ofstream> streams;
-	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
+	std::vector<unsigned int> tracks;
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
@@ -170,19 +137,44 @@ void mkvUtil::dumpAllMKVsup(std::string filename)
 	{
 		if(mkvFile->streams[i]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
 		{
-			AVDictionaryEntry* entry = NULL;
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string language(entry->value);
-			entry = av_dict_get(mkvFile->streams[i]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
-			std::string title(entry->value);
-			std::string outname = basename + std::to_string(i) + "." + title + "." + language + ".sup";
-			streams.insert(std::pair<unsigned int, std::ofstream>(i, std::ofstream(outname, std::ofstream::binary)));
+			tracks.push_back(i);
 		}
+	}
+	avformat_close_input(&mkvFile);
+	mkvUtil::dumpSelectMKVsup(filename, tracks);
+}
+
+void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
+{
+	std::map<unsigned int, std::ofstream> streams;
+	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
+	AVFormatContext * mkvFile = avformat_alloc_context();
+	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
+	avformat_find_stream_info(mkvFile,  NULL);
+	for(int i = 0; i < tracks.size(); i++)
+	{
+		if(mkvFile->streams[tracks[i]]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
+		{
+			AVDictionaryEntry* entry = NULL;
+			std::string title;
+			std::string language;
+			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
+			if(entry == NULL) std::cerr << "Did not find language for track " + std::to_string(tracks[i]) << std::endl;
+			else language = mkvUtil::cleanLangISO(std::string(entry->value));
+			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
+			title += entry == NULL ? language : entry->value;
+			std::string outname = basename + std::to_string(tracks[i]) + ".";
+			if(language.compare("") != 0) outname += language + ".sup";
+			else outname += "sup";
+			streams.insert(std::pair<unsigned int, std::ofstream>(tracks[i], std::ofstream(outname, std::ofstream::binary)));
+		}
+		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
-		if (mkvFile->streams[packet->stream_index]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
+		unsigned int num = packet->stream_index;
+		if (streams.find(num) != streams.end())
 		{
 			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
 		}
@@ -196,29 +188,8 @@ void mkvUtil::dumpAllMKVsup(std::string filename)
 std::string mkvUtil::cleanLangISO(std::string in)
 {
 	std::string out;
-	std::map<std::string, std::string> iso;
-	iso.insert(std::pair<std::string, std::string>("tib", "bod"));
-	iso.insert(std::pair<std::string, std::string>("cze", "ces"));
-	iso.insert(std::pair<std::string, std::string>("wel", "cym"));
-	iso.insert(std::pair<std::string, std::string>("gre", "ell"));
-	iso.insert(std::pair<std::string, std::string>("baq", "eus"));
-	iso.insert(std::pair<std::string, std::string>("per", "fas"));
-	iso.insert(std::pair<std::string, std::string>("fre", "fra"));
-	iso.insert(std::pair<std::string, std::string>("geo", "kat"));
-	iso.insert(std::pair<std::string, std::string>("ger", "deu"));
-	iso.insert(std::pair<std::string, std::string>("arm", "hye"));
-	iso.insert(std::pair<std::string, std::string>("ice", "isl"));
-	iso.insert(std::pair<std::string, std::string>("mac", "mkd"));
-	iso.insert(std::pair<std::string, std::string>("mao", "mri"));
-	iso.insert(std::pair<std::string, std::string>("may", "msa"));
-	iso.insert(std::pair<std::string, std::string>("bur", "mya"));
-	iso.insert(std::pair<std::string, std::string>("dut", "nld"));
-	iso.insert(std::pair<std::string, std::string>("rum", "ron"));
-	iso.insert(std::pair<std::string, std::string>("slo", "slk"));
-	iso.insert(std::pair<std::string, std::string>("alb", "sqi"));
-	iso.insert(std::pair<std::string, std::string>("chi", "zho"));
-	std::map<std::string, std::string>::iterator it = iso.find(in);
-	if(it != iso.end())	out = it->second;
+	std::map<std::string, std::string>::iterator it = isoMap::map.find(in);
+	if(it != isoMap::map.end()) out = it->second;
 	else out = in;
 	return out;
 }
