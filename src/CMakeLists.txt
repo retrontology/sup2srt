@@ -1,0 +1,5 @@
+add_subdirectory(pgs)
+target_include_directories (pgs PUBLIC pgs)
+find_library(TESSERACT NAMES tesseract tess REQUIRED)
+add_executable(sup2srt sup2srt.cpp mkvUtil.cpp srtUtil.cpp)
+target_link_libraries(sup2srt "${TESSERACT_LIBRARIES}")
