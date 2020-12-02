@@ -1,4 +1,4 @@
-find_library(TIFF NAMES tiff REQUIRED COMPONENTS CXX)
+find_package(TIFF REQUIRED COMPONENTS CXX)
 include_directories( ${TIFF_INCLUDE_DIRS} )
 link_directories( ${TIFF_LIBRARY_DIRS} )
 
