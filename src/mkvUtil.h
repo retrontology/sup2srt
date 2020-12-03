@@ -40,6 +40,8 @@ namespace mkvUtil
 	std::string cleanLangISO(std::string in);
 	std::vector<unsigned int> parseTracks(std::string trackString);
 	std::string formatPacket(AVPacket* packet);
+	unsigned int char2ToInt(char * ptr);
+	unsigned char cleanChar(char in);
 };
 
 #endif /* SRC_MKVUTIL_H_ */

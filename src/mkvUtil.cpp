@@ -232,7 +232,7 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 	int offset = 0;
 	while(offset < packet->size)
 	{
-		unsigned int segSize = pgsUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
+		unsigned int segSize = mkvUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
 		out << "PG";
 		char * buffer = new char[4];
 		u_int32_t pts = packet->pts * 90;
@@ -246,4 +246,14 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 		offset += 3 + segSize;
 	}
 	return out.str();
+}
+
+unsigned int mkvUtil::char2ToInt(char * ptr)
+{
+	return mkvUtil::cleanChar(ptr[1]) | (mkvUtil::cleanChar(ptr[0]) << 8);
+}
+
+unsigned char mkvUtil::cleanChar(char in)
+{
+	return static_cast<unsigned int>(in) ;
 }
