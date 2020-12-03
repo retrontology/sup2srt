@@ -97,7 +97,7 @@ void parseArgs(int argc, char** argv)
 	}
 	if(language.compare("-1") == 0 && !mkv)
 	{
-		std::cerr << "Please supply a language according to ISO-3166" << std::endl;
+		std::cerr << "Please supply a language according to ISO 639-2/T" << std::endl;
 		std::cerr << usage;
 		exit(1);
 	}

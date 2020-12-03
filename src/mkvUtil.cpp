@@ -25,7 +25,7 @@ std::map<std::string,std::string> isoMap::map
 	{"rum", "ron"},
 	{"slo", "slk"},
 	{"alb", "sqi"},
-	{"chi", "zho"},
+	{"zho", "chi"}
 };
 
 supStream::supStream()
