@@ -89,9 +89,11 @@ void parseArgs(int argc, char** argv)
 	}
 	if(mkv && tracks.size() == 0)
 	{
-		std::cerr << "Please supply a track index if you input an mkv file" << std::endl;
-		std::cerr << usage;
-		exit(1);
+		//std::cerr << "Please supply a track index if you input an mkv file" << std::endl;
+		//std::cerr << usage;
+		//exit(1);
+		std::cout << "No tracks provided. Attempting to find PGS tracks automatically..." << std::endl;
+		tracks = mkvUtil::findAllPGSTracks(input);
 	}
 	if(language.compare("-1") == 0 && !mkv)
 	{

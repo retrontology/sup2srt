@@ -10,7 +10,7 @@
 #include "paletteSegment.h"
 #include <memory>
 
-paletteDefinitionSegment::paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, std::vector<paletteSegment> paletteSegments, unsigned int paletteCount)
+paletteDefinitionSegment::paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, std::map<unsigned int, paletteSegment> paletteSegments, unsigned int paletteCount)
 {
 	this->paletteID = pgsUtil::cleanChar(paletteID[0]);
 	this->paletteVersionNumber = pgsUtil::cleanChar(paletteVersionNumber[0]);

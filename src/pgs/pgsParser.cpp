@@ -166,7 +166,7 @@ paletteDefinitionSegment pgsParser::parsePDS(char * buffer, unsigned int segment
 	unsigned int segmentCount = (segmentSize - 2) / 5;
 	char * paletteID = buffer;
 	char * paletteVersionNumber = buffer+1;
-	std::vector<paletteSegment> paletteSegments;
+	std::map<unsigned int, paletteSegment> paletteSegments;
 	for(int i = 0; i < segmentCount; i++)
 	{
 		char * paletteEntryID = buffer+2+5*i;
@@ -174,7 +174,7 @@ paletteDefinitionSegment pgsParser::parsePDS(char * buffer, unsigned int segment
 		char * colorDiffRed = buffer+4+5*i;
 		char * colorDiffBlue = buffer+5+5*i;
 		char * transparency = buffer+6+5*i;
-		paletteSegments.push_back(paletteSegment(paletteEntryID, luminance, colorDiffRed, colorDiffBlue, transparency));
+		paletteSegments.insert(std::pair<unsigned int, paletteSegment>(pgsUtil::cleanChar(*paletteEntryID), paletteSegment(paletteEntryID, luminance, colorDiffRed, colorDiffBlue, transparency)));
 	}
 	return paletteDefinitionSegment(paletteID, paletteVersionNumber, paletteSegments, segmentCount);
 }
@@ -265,7 +265,7 @@ void pgsParser::dumpTIFFs(std::string path, bool gray)
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
 			std::ofstream file;
 			file.open(path + "/" + ss.str() + ".tiff", std::ifstream::binary);
-			std::ostringstream tiff = this->displaySegments[i].getTIFF();
+			std::ostringstream tiff = this->displaySegments[i].getTIFF(gray);
 			file.write(tiff.str().c_str(), tiff.str().length());
 			file.close();
 			count++;

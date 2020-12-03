@@ -55,16 +55,7 @@ void mkvUtil::tsToChar4(char * buffer, u_int32_t ts)
 	buffer[3] = ts & 0x000000FF;
 }
 
-
-std::stringstream mkvUtil::extractSingleMKVsup(std::string filename, int index)
-{
-	std::stringstream out;
-	std::vector<unsigned int> tracks{(unsigned int)(index)};
-	out << mkvUtil::extractSelectMKVsup(filename, tracks)[0].data;
-	return out;
-}
-
-std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
+std::vector<unsigned int> mkvUtil::findAllPGSTracks(std::string filename)
 {
 	std::vector<unsigned int> tracks;
 	AVFormatContext * mkvFile = avformat_alloc_context();
@@ -78,7 +69,20 @@ std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
 		}
 	}
 	avformat_close_input(&mkvFile);
-	return mkvUtil::extractSelectMKVsup(filename, tracks);
+	return tracks;
+}
+
+std::stringstream mkvUtil::extractSingleMKVsup(std::string filename, int index)
+{
+	std::stringstream out;
+	std::vector<unsigned int> tracks{(unsigned int)(index)};
+	out << mkvUtil::extractSelectMKVsup(filename, tracks)[0].data;
+	return out;
+}
+
+std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
+{
+	return mkvUtil::extractSelectMKVsup(filename, mkvUtil::findAllPGSTracks(filename));
 }
 
 std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
@@ -104,6 +108,8 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
+	//unsigned long progress = 0;
+	std::cout << std::endl;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
@@ -111,8 +117,11 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 		{
 			streams[packet->stream_index].data += mkvUtil::formatPacket(packet);
 		}
+		//progress += packet->size;
+		std::cout << "Parsing mkv at: " + mkvUtil::milliToString(packet->pts) + "\r";
 		av_packet_unref(packet);
 	}
+	std::cout << std::endl;
 	avformat_close_input(&mkvFile);
 	av_packet_free(&packet);
 	std::vector<supStream> out;
@@ -129,19 +138,7 @@ void mkvUtil::dumpSingleMKVsup(std::string filename, int index)
 
 void mkvUtil::dumpAllMKVsup(std::string filename)
 {
-	std::vector<unsigned int> tracks;
-	AVFormatContext * mkvFile = avformat_alloc_context();
-	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
-	avformat_find_stream_info(mkvFile,  NULL);
-	for(unsigned int i = 0; i < mkvFile->nb_streams; i++)
-	{
-		if(mkvFile->streams[i]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
-		{
-			tracks.push_back(i);
-		}
-	}
-	avformat_close_input(&mkvFile);
-	mkvUtil::dumpSelectMKVsup(filename, tracks);
+	mkvUtil::dumpSelectMKVsup(filename, mkvUtil::findAllPGSTracks(filename));
 }
 
 void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
@@ -171,6 +168,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
+	unsigned long progress = 0;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
@@ -178,6 +176,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		{
 			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
 		}
+		progress += packet->size;
 		av_packet_unref(packet);
 	}
 	avformat_close_input(&mkvFile);
@@ -246,6 +245,24 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 		offset += 3 + segSize;
 	}
 	return out.str();
+}
+
+std::string mkvUtil::milliToString(unsigned long in)
+{
+	unsigned long temp = floor(in);
+	int hour = floor(temp / 3600000);
+	int minute = floor((temp % 3600000) / 60000);
+	int second = floor((temp % 60000) / 1000);
+	int milli = floor(temp % 1000);
+	std::ostringstream h;
+	std::ostringstream min;
+	std::ostringstream s;
+	std::ostringstream mil;
+	h << std::setw(2) << std::setfill('0') << std::to_string(hour);
+	min << std::setw(2) << std::setfill('0') << std::to_string(minute);
+	s << std::setw(2) << std::setfill('0') << std::to_string(second);
+	mil << std::setw(2) << std::setfill('0') << std::to_string(floor(milli/10));
+	return std::string(h.str() + ":" + min.str() + ":" + s.str() + "." + mil.str());
 }
 
 unsigned int mkvUtil::char2ToInt(char * ptr)

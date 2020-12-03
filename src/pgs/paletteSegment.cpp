@@ -19,7 +19,7 @@ paletteSegment::paletteSegment()
 	this->r = 0;
 	this->g = 0;
 	this->b = 0;
-	this->gray = 0;
+	this->gray = 0xFFFFFF;
 }
 
 paletteSegment::paletteSegment(char * paletteEntryID, char * luminance, char * colorDiffRed, char * colorDiffBlue, char * transparency)

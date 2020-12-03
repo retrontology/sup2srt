@@ -31,6 +31,7 @@ public:
 namespace mkvUtil
 {
 	void tsToChar4(char * buffer, u_int32_t ts);
+	std::vector<unsigned int> findAllPGSTracks(std::string filename);
 	std::stringstream extractSingleMKVsup(std::string filename, int index);
 	std::vector<supStream> extractSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
 	std::vector<supStream> extractAllMKVsup(std::string filename);
@@ -40,6 +41,7 @@ namespace mkvUtil
 	std::string cleanLangISO(std::string in);
 	std::vector<unsigned int> parseTracks(std::string trackString);
 	std::string formatPacket(AVPacket* packet);
+	std::string milliToString(unsigned long in);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
 };

@@ -9,15 +9,15 @@
 #define PALETTEDEFINITIONSEGMENT_H_
 #include "pgsSegment.h"
 #include "paletteSegment.h"
-#include <vector>
+#include <map>
 
 class paletteDefinitionSegment: public pgsSegment {
 public:
 	unsigned char paletteID;
 	unsigned char paletteVersionNumber;
 	unsigned int paletteCount;
-	std::vector<paletteSegment> paletteSegments;
-	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, std::vector<paletteSegment> paletteSegments, unsigned int paletteCount);
+	std::map<unsigned int, paletteSegment> paletteSegments;
+	paletteDefinitionSegment(char * paletteID, char * paletteVersionNumber, std::map<unsigned int, paletteSegment> paletteSegments, unsigned int paletteCount);
 	virtual ~paletteDefinitionSegment();
 };
 
