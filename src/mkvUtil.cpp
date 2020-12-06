@@ -25,7 +25,7 @@ std::map<std::string,std::string> isoMap::map
 	{"rum", "ron"},
 	{"slo", "slk"},
 	{"alb", "sqi"},
-	{"zho", "chi"}
+	{"chi", "chi_sim"}
 };
 
 supStream::supStream()
@@ -108,8 +108,8 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
-	//unsigned long progress = 0;
 	std::cout << std::endl;
+	unsigned long oldpts;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
@@ -117,8 +117,11 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 		{
 			streams[packet->stream_index].data += mkvUtil::formatPacket(packet);
 		}
-		//progress += packet->size;
-		std::cout << "Parsing mkv at: " + mkvUtil::milliToString(packet->pts) + "\r";
+		if(packet->pts != oldpts)
+		{
+			std::cout << "Parsing mkv at: " + mkvUtil::milliToString(packet->pts) + "\r";
+			oldpts = packet->pts;
+		}
 		av_packet_unref(packet);
 	}
 	std::cout << std::endl;
@@ -253,7 +256,7 @@ std::string mkvUtil::milliToString(unsigned long in)
 	int hour = floor(temp / 3600000);
 	int minute = floor((temp % 3600000) / 60000);
 	int second = floor((temp % 60000) / 1000);
-	int milli = floor(temp % 1000);
+	int milli = floor((temp % 1000) / 10);
 	std::ostringstream h;
 	std::ostringstream min;
 	std::ostringstream s;
@@ -261,7 +264,7 @@ std::string mkvUtil::milliToString(unsigned long in)
 	h << std::setw(2) << std::setfill('0') << std::to_string(hour);
 	min << std::setw(2) << std::setfill('0') << std::to_string(minute);
 	s << std::setw(2) << std::setfill('0') << std::to_string(second);
-	mil << std::setw(2) << std::setfill('0') << std::to_string(floor(milli/10));
+	mil << std::setw(2) << std::setfill('0') << std::to_string(milli);
 	return std::string(h.str() + ":" + min.str() + ":" + s.str() + "." + mil.str());
 }
 
