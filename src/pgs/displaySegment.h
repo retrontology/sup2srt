@@ -32,7 +32,7 @@ public:
 					pgsSegment end);
 	virtual ~displaySegment();
 	std::ostringstream getTIFF(bool gray = false);
-	std::ostringstream getClearTIFF();
+	std::ostringstream getClearTIFF(unsigned int padding = 8);
 };
 
 #endif /* SRC_PGS_DISPLAYSEGMENT_H_ */

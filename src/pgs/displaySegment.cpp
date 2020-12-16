@@ -75,13 +75,13 @@ std::ostringstream displaySegment::getTIFF(bool gray)
 	return tiffStream;
 }
 
-std::ostringstream displaySegment::getClearTIFF()
+std::ostringstream displaySegment::getClearTIFF(unsigned int padding)
 {
 	int samples = 3;
 	std::ostringstream tiffStream;
 	TIFF* out = TIFFStreamOpen(std::to_string(this->ods[0].objectID).c_str(), &tiffStream);
-	TIFFSetField(out, TIFFTAG_IMAGEWIDTH, this->ods[0].width+4);
-	TIFFSetField(out, TIFFTAG_IMAGELENGTH, this->ods[0].height+4);
+	TIFFSetField(out, TIFFTAG_IMAGEWIDTH, this->ods[0].width+padding*2);
+	TIFFSetField(out, TIFFTAG_IMAGELENGTH, this->ods[0].height+padding*2);
 	TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, samples);
 	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);
 	TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
@@ -89,27 +89,27 @@ std::ostringstream displaySegment::getClearTIFF()
 	TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
 	TIFFSetField(out, TIFFTAG_XRESOLUTION, 300);
 	TIFFSetField(out, TIFFTAG_YRESOLUTION, 300);
-	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, (this->ods[0].width+4)*samples);
-	unsigned char* buffer = (unsigned char*)_TIFFmalloc((this->ods[0].width+4)*samples);
+	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, (this->ods[0].width+padding*2)*samples);
+	unsigned char* buffer = (unsigned char*)_TIFFmalloc((this->ods[0].width+padding*2)*samples);
 	unsigned long ** pixels = new unsigned long * [this->ods[0].height];
 	for(int i = 0; i < this->ods[0].height; i++){ pixels[i] = new unsigned long[this->ods[0].width]; }
 	pgsUtil::decodeRLE(pixels, this->pds[0], this->ods[0], true);
-	char * temp = new char[(this->ods[0].width+4)*samples];
-	for (int i = 0; i < ods[0].height+4; i++)
+	char * temp = new char[(this->ods[0].width+padding*2)*samples];
+	for (int i = 0; i < ods[0].height+padding*2; i++)
 	{
-		for(int j = 0; j < this->ods[0].width+4; j++)
+		for(int j = 0; j < this->ods[0].width+padding*2; j++)
 		{
-			if(i == 0 || i == 1 || i == ods[0].height+2 || i == ods[0].height+3 || j == 0 || j == 1 || j == ods[0].width+2 || j == ods[0].width+3)
+			if(i < padding || i >= ods[0].height+padding || j < padding || j >= ods[0].width+padding)
 			{
 				pgsUtil::numToChars(temp+j*samples, 0xFFFFFF, samples);
 			}
 			else
 			{
-				pgsUtil::numToChars(temp+j*samples, pixels[i-2][j-2], samples);
+				pgsUtil::numToChars(temp+j*samples, pixels[i-padding][j-padding], samples);
 			}
 
 		}
-	    memcpy(buffer, temp, (this->ods[0].width+4)*samples);
+	    memcpy(buffer, temp, (this->ods[0].width+padding*2)*samples);
 	    if (TIFFWriteScanline(out, buffer, i) < 0) break;
 	}
 	delete[] temp;
