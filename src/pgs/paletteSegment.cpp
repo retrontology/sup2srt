@@ -62,7 +62,7 @@ unsigned char paletteSegment::calcBlue(unsigned char Y, unsigned char Cb, unsign
 
 unsigned long paletteSegment::calcGray(unsigned char transparency, unsigned char luminance)
 {
-	if(transparency < 128 || luminance < 64)
+	if(transparency < 128 || luminance < 96)
 	{
 		return 255 | 255 << 8 | 255 << 16;
 	}

@@ -265,7 +265,10 @@ void pgsParser::dumpTIFFs(std::string path, bool gray)
 			ss << std::setw(5) << std::setfill('0') << std::to_string(count);
 			std::ofstream file;
 			file.open(path + "/" + ss.str() + ".tiff", std::ifstream::binary);
-			std::ostringstream tiff = this->displaySegments[i].getTIFF(gray);
+			std::ostringstream tiff;
+			if (gray) tiff = this->displaySegments[i].getClearTIFF();
+			else tiff = this->displaySegments[i].getTIFF();
+
 			file.write(tiff.str().c_str(), tiff.str().length());
 			file.close();
 			count++;
