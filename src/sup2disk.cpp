@@ -1,4 +1,5 @@
 #include "mkvUtil.h"
+#include "sup2srtConfig.h"
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -6,7 +7,8 @@
 #include <cstdlib>
 #include <vector>
 
-std::string usage = "";
+std::string usage = "usage: sup2disk [-hv] [-t track] input\n\n\t-h:\n\t\tDisplay this help menu\n\n\t-v:\n\t\tDisplay program Version\n\n\t-t track:\n\t\tSelect track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n\n\tinput:\n\t\tfile to parse SUP stream. Must be an mkv";
+std::string version = std::to_string(sup2srt_VERSION_MAJOR) + "." + std::to_string(sup2srt_VERSION_MINOR) + "." + std::to_string(sup2srt_VERSION_PATCH);
 std::string input;
 std::vector<unsigned int> tracks;
 
@@ -15,14 +17,14 @@ void parseArgs(int argc, char** argv)
 	extern char *optarg;
 	extern int optind;
 	int o;
-	while ((o = getopt (argc, argv, "ht:")) != -1)
+	while ((o = getopt (argc, argv, "ht:v")) != -1)
 	{
 		switch(o)
 		{
 
 			case 'h':
 			{
-				std::cout << usage;
+				std::cout << usage << std::endl;
 				exit(0);
 			}
 			case 't':
@@ -30,6 +32,11 @@ void parseArgs(int argc, char** argv)
 				std::string trackString(optarg);
 				tracks = mkvUtil::parseTracks(trackString);
 				break;
+			}
+			case 'v':
+			{
+				std::cout << "sup2disk version " << version << std::endl;
+				exit(0);
 			}
 			case '?':
 			{

@@ -5,12 +5,14 @@
 #include "pgs/pgsParser.h"
 #include "srtUtil.h"
 #include "mkvUtil.h"
+#include "sup2srtConfig.h"
 
-std::string usage = "usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input\n\n\t-h:\n\t\tDisplay this help menu\n\n\t-v:\n\t\tVerbose - output srt as it's being written\n\n\t-T:\n\t\tDump TIFF images extracted from the PGS file to disk\n\n\t-S:\n\t\tWrite SUP file extracted from mkv to disk (only used when an mkv is input)\n\n\t-t track:\n\t\tSelect track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n\n\t-l language:\n\t\tSelect Tesseract language according to ISO 639-2/T. If not specified and an mkv is input, the program will try to use the track metadata. Must be used when a binary SUP file is input\n\n\t-o:\n\t\tOutput file (if not specified the file will be output to the same dir as the input).\n\n\tinput:\n\t\tfile to parse SUP stream. Can either be a binary SUP file or an mkv. If the file doesn't end in .mkv, it will assume it is a binary SUP file.\n\n";
+std::string usage = "usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input\n\n\t-h:\n\t\tDisplay this help menu\n\n\t-v:\n\t\tDisplay program Version\n\n\t-V:\n\t\tVerbose - output srt as it's being written\n\n\t-T:\n\t\tDump TIFF images extracted from the PGS file to disk\n\n\t-S:\n\t\tWrite SUP file extracted from mkv to disk (only used when an mkv is input)\n\n\t-t track:\n\t\tSelect track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n\n\t-l language:\n\t\tSelect Tesseract language according to ISO 639-2/T. If not specified and an mkv is input, the program will try to use the track metadata. Must be used when a binary SUP file is input\n\n\t-o:\n\t\tOutput file (if not specified the file will be output to the same dir as the input).\n\n\tinput:\n\t\tfile to parse SUP stream. Can either be a binary SUP file or an mkv. If the file doesn't end in .mkv, it will assume it is a binary SUP file.";
 std::string input;
 std::string output = std::string("-1");
 std::string language = std::string("-1");
 std::vector<unsigned int> tracks;
+std::string version = std::to_string(sup2srt_VERSION_MAJOR) + "." + std::to_string(sup2srt_VERSION_MINOR) + "." + std::to_string(sup2srt_VERSION_PATCH);
 //int track = -1;
 bool verbose = false;
 bool dumpTIFF = false;
@@ -23,14 +25,19 @@ void parseArgs(int argc, char** argv)
 	extern char *optarg;
 	extern int optind;
 	int o;
-	while ((o = getopt (argc, argv, "hTSl:ot:v")) != -1)
+	while ((o = getopt (argc, argv, "hTSl:ot:vV")) != -1)
 	{
 		switch(o)
 		{
 
 			case 'h':
 			{
-				std::cout << usage;
+				std::cout << usage << std::endl;
+				exit(0);
+			}
+			case 'v':
+			{
+				std::cout << "sup2srt version " << version << std::endl;
 				exit(0);
 			}
 			case 'T':
@@ -60,7 +67,7 @@ void parseArgs(int argc, char** argv)
 				tracks = mkvUtil::parseTracks(trackString);
 				break;
 			}
-			case 'v':
+			case 'V':
 			{
 				verbose = true;
 				break;

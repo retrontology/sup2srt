@@ -1,4 +1,7 @@
-# Specify minimum version
+configure_file(sup2srtConfig.h.in sup2srtConfig.h)
+
+include_directories("${PROJECT_BINARY_DIR}/src")
+
 set(MINIMUM_TESSERACT_VERSION 4.0.0)
 set(MINIMUM_LEPTONICA_VERSION 1.73)
 

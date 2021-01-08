@@ -1,10 +1,3 @@
-/*
- * pgsSegment.h
- *
- *  Created on: Nov 2, 2020
- *      Author: blazer
- */
-
 #ifndef PGSSEGMENT_H_
 #define PGSSEGMENT_H_
 #include "pgsSegmentHeader.h"

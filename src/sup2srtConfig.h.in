@@ -1,0 +1,3 @@
+#define sup2srt_VERSION_MAJOR @sup2srt_VERSION_MAJOR@
+#define sup2srt_VERSION_MINOR @sup2srt_VERSION_MINOR@
+#define sup2srt_VERSION_PATCH @sup2srt_VERSION_PATCH@
