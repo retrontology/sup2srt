@@ -29,3 +29,6 @@ add_executable(sup2disk sup2disk.cpp mkvUtil.cpp)
 target_link_libraries(sup2srt "${TIFF_LIBRARIES}" "${LEPTONICA_LIBRARIES}" "${TESSERACT_LIBRARIES}" "PkgConfig::LIBAV" pgs)
 target_link_libraries(sup2disk "PkgConfig::LIBAV")
 
+install(TARGETS sup2srt DESTINATION bin)
+install(TARGETS sup2disk DESTINATION bin)
+
