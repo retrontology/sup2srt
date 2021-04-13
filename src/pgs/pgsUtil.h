@@ -22,6 +22,7 @@ namespace pgsUtil
 	double ptsToMilli(unsigned long in);
 	void decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods, bool gray = false);
 	void numToChars(char * out, unsigned long long num, unsigned int length);
+	unsigned long invertColor(unsigned long color, char alphaOffset);
 }
 
 

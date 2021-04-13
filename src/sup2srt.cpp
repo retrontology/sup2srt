@@ -154,7 +154,7 @@ int main(int argc, char** argv)
 			{
 				std::string path = basename + std::to_string(streams[i].track) + "." + lang + ".sup.TIFFs";;
 				std::cout << "TIFF files being written to: " + path << std::endl;
-				pgsp.dumpTIFFs(path, true);
+				pgsp.dumpTIFFs(path, false);
 				std::cout << "TIFF files have been written" << std::endl;
 			}
 			std::cout << "Starting OCR on extracted images..." << std::endl;
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 		{
 			std::string path = input + ".TIFFs";;
 			std::cout << "TIFF files being written to: " + path << std::endl;
-			pgsp.dumpTIFFs(path, true);
+			pgsp.dumpTIFFs(path, false);
 			std::cout << "TIFF files have been written" << std::endl;
 		}
 		std::cout << "Starting OCR on extracted images..." << std::endl;

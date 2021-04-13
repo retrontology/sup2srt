@@ -114,6 +114,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 			else pixels[h][w] = pds.paletteSegments[color].getARGB();
 			w++;
 		}
+		//if(invert) pixels[h][w] = pgsUtil::invertColor(pixels[h][w], 3);
 	}
 }
 
@@ -125,5 +126,20 @@ void pgsUtil::numToChars(char * out, unsigned long long num, unsigned int length
 		out[i] = (num & mask) >> (i*8);
 		mask = mask << 8;
 	}
+}
+
+unsigned long pgsUtil::invertColor(unsigned long color, char alphaOffset)
+{
+	unsigned long invert = 0x00000000;
+	for (int i = 0; i < 4; i++)
+	{
+		if(i != alphaOffset)
+		{
+			unsigned long channel = 0x00000000;
+			channel = (255 << (i*8)) - (color & (0x000000FF << (i*8)));
+			invert = invert | channel;
+		}
+	}
+	return invert;
 }
 
