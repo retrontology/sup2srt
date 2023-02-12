@@ -181,15 +181,23 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
-	unsigned long progress = 0;
+	time_t now;
+	time(&now);
+	time_t last_time = now;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
 			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
+			time(&now);
+			if (now - last_time >= 1)
+			{
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(packet->pts);
+				std::cout.flush();
+				last_time = now;
+			}
 		}
-		progress += packet->size;
 		av_packet_unref(packet);
 	}
 	avformat_close_input(&mkvFile);
