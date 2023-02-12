@@ -3,6 +3,7 @@
 #include <map>
 #include <utility>
 #include <iostream>
+#include <time.h> 
 
 std::map<std::string,std::string> isoMap::map
 {
@@ -109,6 +110,9 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 	}
 	AVPacket * packet = av_packet_alloc();
 	std::cout << std::endl;
+	time_t now;
+	time(&now);
+	time_t last_time = now;
 	unsigned long oldpts;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
@@ -119,7 +123,13 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 		}
 		if(packet->pts != oldpts)
 		{
-			std::cout << "Parsing mkv at: " + mkvUtil::milliToString(packet->pts) + "\r";
+			time(&now);
+			if (now - last_time >= 1)
+			{
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(packet->pts);
+				std::cout.flush();
+				last_time = now;
+			}
 			oldpts = packet->pts;
 		}
 		av_packet_unref(packet);
