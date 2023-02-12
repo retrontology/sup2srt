@@ -5,8 +5,9 @@
             "request": "launch",
             "type": "cppdbg",
             "preLaunchTask": "Make sup2srt",
-            "program": "sup2srt",
-            "cwd": "${workspaceFolder}/build/src/"
+            "program": "${workspaceFolder}/build/src/sup2srt",
+            "cwd": "${workspaceFolder}/build/src/",
+            "args": ["-h"]
         }
     ]   
 }
