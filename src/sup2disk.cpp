@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <vector>
 
-std::string usage = "usage: sup2disk [-hv] [-t track] input\n\n  -h:        Display this help menu\n  -v:        Display program Version\n  -t track:  Select track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n  input:     file to parse SUP stream. Must be an mkv";
+std::string usage = "usage: sup2disk [-hv] [-t track] input\n\n  -h:        Display this help menu\n  -v:        Display program Version\n  -t track:  Select track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n  input:     file to parse SUP stream. Must be an mkv\n";
 std::string version = std::to_string(sup2srt_VERSION_MAJOR) + "." + std::to_string(sup2srt_VERSION_MINOR) + "." + std::to_string(sup2srt_VERSION_PATCH);
 std::string input;
 std::vector<unsigned int> tracks;
