@@ -114,19 +114,20 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 	time(&now);
 	time_t last_time = now;
 	unsigned long oldpts;
+	float_t time_coeff = 1;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index].data += mkvUtil::formatPacket(packet);
+			streams[packet->stream_index].data += mkvUtil::formatPacket(packet, time_coeff);
 		}
 		if(packet->pts != oldpts)
 		{
 			time(&now);
 			if (now - last_time >= 1)
 			{
-				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(packet->pts);
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(floor(packet->pts * time_coeff));
 				std::cout.flush();
 				last_time = now;
 			}
@@ -184,16 +185,17 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 	time_t now;
 	time(&now);
 	time_t last_time = now;
+	float_t time_coeff = .001;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
+			streams[packet->stream_index] << mkvUtil::formatPacket(packet, time_coeff);
 			time(&now);
 			if (now - last_time >= 1)
 			{
-				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(packet->pts);
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString(floor(packet->pts * time_coeff));
 				std::cout.flush();
 				last_time = now;
 			}
@@ -246,7 +248,7 @@ std::vector<unsigned int> mkvUtil::parseTracks(std::string trackString)
 	return out;
 }
 
-std::string mkvUtil::formatPacket(AVPacket* packet)
+std::string mkvUtil::formatPacket(AVPacket* packet, float_t time_coeff)
 {
 	std::ostringstream out;
 	int offset = 0;
@@ -255,8 +257,8 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 		unsigned int segSize = mkvUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
 		out << "PG";
 		char * buffer = new char[4];
-		u_int32_t pts = packet->pts * 90;
-		u_int32_t dts = packet->dts * 90;
+		u_int32_t pts = floor(packet->pts * time_coeff);
+		u_int32_t dts = floor(packet->dts * time_coeff);
 		tsToChar4(buffer, pts);
 		out << std::string(buffer, 4);
 		tsToChar4(buffer, dts);

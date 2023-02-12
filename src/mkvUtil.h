@@ -40,7 +40,7 @@ namespace mkvUtil
 	void dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
 	std::string cleanLangISO(std::string in);
 	std::vector<unsigned int> parseTracks(std::string trackString);
-	std::string formatPacket(AVPacket* packet);
+	std::string formatPacket(AVPacket* packet, float_t time_coeff);
 	std::string milliToString(unsigned long in);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
