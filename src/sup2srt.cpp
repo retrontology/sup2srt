@@ -92,6 +92,7 @@ void parseArgs(int argc, char** argv)
 		if(input.find('.') < input.length())
 		{
 			mkv = input.substr(input.find_last_of('.') + 1).compare("mkv") == 0;
+			mkv = mkv || input.substr(input.find_last_of('.') + 1).compare("m2ts") == 0;
 		}
 	}
 	if(mkv && tracks.size() == 0)
