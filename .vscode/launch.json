@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Build and run",
+            "request": "launch",
+            "type": "cppdbg",
+            "preLaunchTask": "Make sup2srt",
+            "program": "${workspaceFolder}/build/src/sup2srt",
+            "cwd": "${workspaceFolder}/build/src/",
+            "args": ["-h"]
+        }
+    ]   
+}

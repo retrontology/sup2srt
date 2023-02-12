@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "Make sup2srt",
+        "command": "/usr/bin/make",
+        "args": ["-j${nproc}"],
+        "options": {
+            "cwd": "${workspaceFolder}/build"
+        },
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "dependsOn": [
+            "Make Clean sup2srt"
+        ]
+      },
+      {
+        "type": "shell",
+        "label": "Make Clean sup2srt",
+        "command": "/usr/bin/make",
+        "args": ["clean"],
+        "options": {
+          "cwd": "${workspaceFolder}/build"
+        },
+        "dependsOn": [
+            "CMake sup2srt",
+        ]
+      },
+      {
+        "type": "shell",
+        "label": "CMake sup2srt",
+        "command": "/usr/bin/cmake",
+        "args": [".."],
+        "options": {
+          "cwd": "${workspaceFolder}/build"
+        },
+        "dependsOn": [
+            "Create Build Dir"
+        ]
+      },
+      {
+        "type": "shell",
+        "label": "Create Build Dir",
+        "command": "mkdir",
+        "args": ["-p", "${workspaceFolder}/build"],
+      }
+    ]
+  }
