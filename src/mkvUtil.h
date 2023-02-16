@@ -22,9 +22,11 @@ public:
 	std::string data;
 	std::string language;
 	std::string title;
-	unsigned int track;
+	u_int32_t track;
+	u_int32_t offset;
+	AVRational time_base;
 	supStream();
-	supStream(unsigned int track, std::string language, std::string title);
+	supStream(u_int32_t track, std::string language, std::string title, u_int32_t offset, AVRational time_base);
 	virtual ~supStream();
 };
 
@@ -40,7 +42,8 @@ namespace mkvUtil
 	void dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks);
 	std::string cleanLangISO(std::string in);
 	std::vector<unsigned int> parseTracks(std::string trackString);
-	std::string formatPacket(AVPacket* packet, float_t time_coeff);
+	std::string formatPacket(AVPacket* packet);
+	std::string formatPacket(AVPacket* packet, supStream stream);
 	std::string milliToString(unsigned long in);
 	unsigned int char2ToInt(char * ptr);
 	unsigned char cleanChar(char in);
