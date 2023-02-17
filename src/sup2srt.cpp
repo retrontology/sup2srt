@@ -7,7 +7,7 @@
 #include "mkvUtil.h"
 #include "sup2srtConfig.h"
 
-std::string usage = "Usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input\n\n  -h:             Display this help menu\n  -v:             Display program Version\n  -V:             Verbose - output srt as it's being written\n  -T:             Dump TIFF images extracted from the PGS file to disk\n  -S:             Write SUP file extracted from mkv to disk (only used when an mkv is input)\n  -t track:       Select track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)\n  -l language:    Select Tesseract language according to ISO 639-2/T. If not specified and an mkv is input, the program will try to use the track metadata. Must be used when a binary SUP file is input\n  -o:             Output file (if not specified the file will be output to the same dir as the input).\n  input:          file to parse SUP stream. Can either be a binary SUP file or an mkv. If the file doesn't end in .mkv, it will assume it is a binary SUP file.";
+std::string usage = "Usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input\n\n  -h:             Display this help menu\n  -v:             Display program Version\n  -V:             Verbose - output srt as it's being written\n  -T:             Dump TIFF images extracted from the PGS file to disk\n  -S:             Write SUP file extracted from video file to disk (only used when an mkv or m2ts is input)\n  -t track:       Select track to extract from video file. Can be multiple tracks separated by a comma (must be used when an mkv or m2ts is input)\n  -l language:    Select Tesseract language according to ISO 639-2/T. If not specified and an mkv or m2ts is input, the program will try to use the track metadata. Must be used when a binary SUP file is input\n  -o:             Output file (if not specified the file will be output to the same dir as the input).\n  input:          file to parse SUP stream. Can either be a binary SUP file or a video file. If the video file doesn't end in .mkv or .m2ts, it will assume it is a binary SUP file.";
 std::string input;
 std::string output = std::string("-1");
 std::string language = std::string("-1");
@@ -92,6 +92,7 @@ void parseArgs(int argc, char** argv)
 		if(input.find('.') < input.length())
 		{
 			mkv = input.substr(input.find_last_of('.') + 1).compare("mkv") == 0;
+			mkv = mkv || input.substr(input.find_last_of('.') + 1).compare("m2ts") == 0;
 		}
 	}
 	if(mkv && tracks.size() == 0)
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
 		std::string basename = input.substr(0, input.find_last_of('.')+1);
 		std::cout << "Extracting SUP stream";
 		std::cout << (tracks.size() > 1 ? "s" : "");
-		std::cout << " from mkv..." << std::endl;
+		std::cout << " from video file..." << std::endl;
 		std::vector<supStream> streams = mkvUtil::extractSelectMKVsup(input, tracks);
 		std::cout << "Stream";
 		std::cout << (tracks.size() > 1 ? "s" : "");

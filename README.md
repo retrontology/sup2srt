@@ -1,6 +1,8 @@
 # sup2srt
 Convert SUP graphic subtitles to text-based SRT format with Tesseract.
 
+## Usage
+```
 usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input
   -h:  	        Display this help menu
   -v:  	        Display program Version
@@ -20,3 +22,4 @@ usage: sup2disk [-hv] [-t track] input
   input:  	 file to parse SUP stream. Must be an mkv  	
 
 Requires: libtiff, libtiffxx, leptonica, tesseract, libav/ffmpeg
+```

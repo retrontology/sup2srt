@@ -3,6 +3,7 @@
 #include <map>
 #include <utility>
 #include <iostream>
+#include <time.h> 
 
 std::map<std::string,std::string> isoMap::map
 {
@@ -34,14 +35,18 @@ supStream::supStream()
 	this->track = 0;
 	this->language = std::string("");
 	this->title = std::string("");
+	this->offset = 0;
+	this->time_base = AVRational();
 }
 
-supStream::supStream(unsigned int track, std::string language, std::string title)
+supStream::supStream(u_int32_t track, std::string language, std::string title, u_int32_t offset, AVRational time_base)
 {
 	this->data = std::string();
 	this->track = track;
 	this->language = language;
 	this->title = title;
+	this->offset = offset;
+	this->time_base = time_base;
 }
 
 supStream::~supStream(){};
@@ -91,6 +96,7 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
+	u_int32_t base_offset = mkvFile->streams[0]->start_time;
 	for(int i = 0; i < tracks.size(); i++)
 	{
 		if(mkvFile->streams[tracks[i]]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
@@ -98,29 +104,43 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 			AVDictionaryEntry* entry = NULL;
 			std::string title;
 			std::string language;
+			u_int32_t offset;
+			AVRational time_base;
 			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
 			if(entry == NULL) std::cerr << "Did not find language for track " + std::to_string(tracks[i]) << std::endl;
 			else language = mkvUtil::cleanLangISO(std::string(entry->value));
 			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
 			title += entry == NULL ? language : entry->value;
-			streams.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title)));
+			//offset = mkvFile->streams[tracks[i]]->start_time;
+			time_base.num = mkvFile->streams[tracks[i]]->time_base.num;
+			time_base.den = mkvFile->streams[tracks[i]]->time_base.den;
+			streams.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, base_offset, time_base)));
 		}
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
 	std::cout << std::endl;
+	time_t now;
+	time(&now);
+	time_t last_time = now;
 	unsigned long oldpts;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index].data += mkvUtil::formatPacket(packet);
-		}
-		if(packet->pts != oldpts)
-		{
-			std::cout << "Parsing mkv at: " + mkvUtil::milliToString(packet->pts) + "\r";
-			oldpts = packet->pts;
+			streams[packet->stream_index].data += mkvUtil::formatPacket(packet, streams[packet->stream_index]);
+			if(packet->pts != oldpts)
+			{
+				time(&now);
+				if (now - last_time >= 1)
+				{
+					std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - streams[packet->stream_index].offset) * streams[packet->stream_index].time_base.num * 1000 / streams[packet->stream_index].time_base.den);
+					std::cout.flush();
+					last_time = now;
+				}
+				oldpts = packet->pts;
+			}
 		}
 		av_packet_unref(packet);
 	}
@@ -171,15 +191,23 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
 	AVPacket * packet = av_packet_alloc();
-	unsigned long progress = 0;
+	time_t now;
+	time(&now);
+	time_t last_time = now;
 	while (av_read_frame(mkvFile, packet) >= 0)
 	{
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
+			streams[packet->stream_index] << mkvUtil::formatPacket(packet, mkvFile->streams[0]->start_time, mkvFile->streams[0]->time_base);
+			time(&now);
+			if (now - last_time >= 1)
+			{
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - mkvFile->streams[0]->start_time) * mkvFile->streams[0]->time_base.num * 1000 / mkvFile->streams[0]->time_base.den);
+				std::cout.flush();
+				last_time = now;
+			}
 		}
-		progress += packet->size;
 		av_packet_unref(packet);
 	}
 	avformat_close_input(&mkvFile);
@@ -228,7 +256,7 @@ std::vector<unsigned int> mkvUtil::parseTracks(std::string trackString)
 	return out;
 }
 
-std::string mkvUtil::formatPacket(AVPacket* packet)
+std::string mkvUtil::formatPacket(AVPacket* packet, u_int32_t base_offset, AVRational time_base)
 {
 	std::ostringstream out;
 	int offset = 0;
@@ -237,8 +265,30 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 		unsigned int segSize = mkvUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
 		out << "PG";
 		char * buffer = new char[4];
-		u_int32_t pts = packet->pts * 90;
-		u_int32_t dts = packet->dts * 90;
+		u_int32_t pts = floor((packet->pts - base_offset) * time_base.num * 1000 / time_base.den);
+		u_int32_t dts = floor((packet->dts - base_offset) * time_base.num * 1000 / time_base.den);
+		tsToChar4(buffer, pts);
+		out << std::string(buffer, 4);
+		tsToChar4(buffer, dts);
+		out << std::string(buffer, 4);
+		delete[] buffer;
+		out << std::string(reinterpret_cast<char *>(packet->data + offset), segSize + 3);
+		offset += 3 + segSize;
+	}
+	return out.str();
+}
+
+std::string mkvUtil::formatPacket(AVPacket* packet, supStream stream)
+{
+	std::ostringstream out;
+	int offset = 0;
+	while(offset < packet->size)
+	{
+		unsigned int segSize = mkvUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
+		out << "PG";
+		char * buffer = new char[4];
+		u_int32_t pts = floor((packet->pts - stream.offset) * stream.time_base.num * 1000 / stream.time_base.den);
+		u_int32_t dts = floor((packet->dts - stream.offset) * stream.time_base.num * 1000 / stream.time_base.den);
 		tsToChar4(buffer, pts);
 		out << std::string(buffer, 4);
 		tsToChar4(buffer, dts);
