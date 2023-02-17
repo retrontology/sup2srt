@@ -199,7 +199,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index] << mkvUtil::formatPacket(packet);
+			streams[packet->stream_index] << mkvUtil::formatPacket(packet, mkvFile->streams[0]->start_time, mkvFile->streams[0]->time_base);
 			time(&now);
 			if (now - last_time >= 1)
 			{
@@ -256,7 +256,7 @@ std::vector<unsigned int> mkvUtil::parseTracks(std::string trackString)
 	return out;
 }
 
-std::string mkvUtil::formatPacket(AVPacket* packet)
+std::string mkvUtil::formatPacket(AVPacket* packet, u_int32_t base_offset, AVRational time_base)
 {
 	std::ostringstream out;
 	int offset = 0;
@@ -265,8 +265,8 @@ std::string mkvUtil::formatPacket(AVPacket* packet)
 		unsigned int segSize = mkvUtil::char2ToInt(reinterpret_cast<char *>(packet->data + offset + 1));
 		out << "PG";
 		char * buffer = new char[4];
-		u_int32_t pts = floor(packet->pts);
-		u_int32_t dts = floor(packet->dts);
+		u_int32_t pts = floor((packet->pts - base_offset) * time_base.num * 1000 / time_base.den);
+		u_int32_t dts = floor((packet->dts - base_offset) * time_base.num * 1000 / time_base.den);
 		tsToChar4(buffer, pts);
 		out << std::string(buffer, 4);
 		tsToChar4(buffer, dts);
@@ -288,7 +288,7 @@ std::string mkvUtil::formatPacket(AVPacket* packet, supStream stream)
 		out << "PG";
 		char * buffer = new char[4];
 		u_int32_t pts = floor((packet->pts - stream.offset) * stream.time_base.num * 1000 / stream.time_base.den);
-		u_int32_t dts = floor((packet->pts - stream.offset) * stream.time_base.num * 1000 / stream.time_base.den);
+		u_int32_t dts = floor((packet->dts - stream.offset) * stream.time_base.num * 1000 / stream.time_base.den);
 		tsToChar4(buffer, pts);
 		out << std::string(buffer, 4);
 		tsToChar4(buffer, dts);
