@@ -1,6 +1,34 @@
 # sup2srt
 Convert SUP graphic subtitles to text-based SRT format with Tesseract.
 
+## Requirements
+- libtiff
+- libtiffxx
+- leptonica
+- tesseract
+- libav/ffmpeg
+- CMake
+
+## Build
+1. Clone the repo
+    ```
+    git clone https://github.com/retrontology/sup2srt
+    ```
+2. Enter the repo and create the build directory
+    ```
+    cd sup2srt
+    mkdir build
+    ```
+3. Enter the build directory and prepare the build
+    ```
+    cd build
+    cmake ..
+    ```
+4. Build the program
+    ```
+    make -j ${nproc}
+    ```
+
 ## Usage
 ```
 usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input
@@ -20,6 +48,4 @@ usage: sup2disk [-hv] [-t track] input
   -v:  	     Display program Version
   -t track:  Select track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)
   input:  	 file to parse SUP stream. Must be an mkv  	
-
-Requires: libtiff, libtiffxx, leptonica, tesseract, libav/ffmpeg
 ```
