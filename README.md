@@ -29,6 +29,12 @@ Convert SUP graphic subtitles to text-based SRT format with Tesseract.
     make -j ${nproc}
     ```
 
+## Install (optional)
+1. Install the program
+   ```
+   sudo make install
+   ```
+
 ## Usage
 ```
 usage: sup2srt [-h] [-vST] [-t track] [-l language] [-o output] input
