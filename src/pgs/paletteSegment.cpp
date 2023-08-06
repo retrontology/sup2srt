@@ -62,15 +62,8 @@ unsigned char paletteSegment::calcBlue(unsigned char Y, unsigned char Cb, unsign
 
 unsigned long paletteSegment::calcGray(unsigned char transparency, unsigned char luminance)
 {
-	if(transparency < 128 || luminance < 64)
-	{
-		return 255 | 255 << 8 | 255 << 16;
-	}
-	else
-	{
-		//return luminance | luminance << 8 | luminance << 16;
-		return 0;
-	}
+	unsigned char x = 255 - transparency * luminance / 255;
+	return x | x << 8 | x << 16;
 }
 
 unsigned long paletteSegment::getRGBA()
