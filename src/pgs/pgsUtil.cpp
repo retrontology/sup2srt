@@ -80,7 +80,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					}
 					case 2:
 					{
-						char color = pgsUtil::cleanChar(ods.data[i+2]);
+						unsigned char color = pgsUtil::cleanChar(ods.data[i+2]);
 						for (unsigned char j = 0; j < pgsUtil::cleanChar(ods.data[i+1] & 0x3F); j++)
 						{
 
@@ -94,7 +94,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 					case 3:
 					{
 						unsigned int count = pgsUtil::cleanChar(ods.data[i+2]) | (pgsUtil::cleanChar(ods.data[i+1] & 0x3F) << 8);
-						char color = pgsUtil::cleanChar(ods.data[i+3]);
+						unsigned char color = pgsUtil::cleanChar(ods.data[i+3]);
 						for(unsigned int j = 0; j < count; j++)
 						{
 							if(gray) pixels[h][w] = pds.paletteSegments[color].gray;
@@ -109,7 +109,7 @@ void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, o
 		}
 		else
 		{
-			char color = pgsUtil::cleanChar(ods.data[i]);
+			unsigned char color = pgsUtil::cleanChar(ods.data[i]);
 			if(gray) pixels[h][w] = pds.paletteSegments[color].gray;
 			else pixels[h][w] = pds.paletteSegments[color].getARGB();
 			w++;
