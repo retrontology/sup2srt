@@ -25,5 +25,5 @@ COPY --from=builder /usr/local/bin/sup2disk /usr/local/bin/sup2disk
 
 # Install dependencies needed for libtiff and tesseract.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg libssl-dev libpng-dev libtiff-dev libleptonica-dev libavutil-dev libavdevice-dev libavformat-dev libavcodec-dev libtesseract-dev && tesseract-ocr-eng \
+    && apt-get install -y --no-install-recommends ffmpeg libssl-dev libpng-dev libtiff-dev libleptonica-dev libavutil-dev libavdevice-dev libavformat-dev libavcodec-dev libtesseract-dev tesseract-ocr-eng \
     && rm -rf /var/lib/apt/lists/*
