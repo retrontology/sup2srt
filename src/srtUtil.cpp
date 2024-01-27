@@ -39,8 +39,8 @@ void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* lang
 	{
 		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
 		{
-			std::string start = srtUtil::milliToSRTString(pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP);
-			std::string end = srtUtil::milliToSRTString(pgs->displaySegments[i+1].pcs.HEADER.PRESENTATION_TIMESTAMP);
+			std::string start = srtUtil::milliToSRTString(pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
+			std::string end = srtUtil::milliToSRTString(pgs->displaySegments[i+1].pcs.HEADER.PRESENTATION_TIMESTAMP/90);
 			std::ostringstream data = pgs->displaySegments[i].getClearTIFF();
 			Pix * pix = pixReadMem(reinterpret_cast<const unsigned char *>(data.str().c_str()), data.str().length());
 			data.clear();
