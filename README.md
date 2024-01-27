@@ -55,3 +55,34 @@ usage: sup2disk [-hv] [-t track] input
   -t track:  Select track to extract from mkv. Can be multiple tracks separated by a comma (must be used when an mkv is input)
   input:  	 file to parse SUP stream. Must be an mkv  	
 ```
+
+## Docker Usage
+
+### Requirements
+
+Install docker, podman or containerd
+
+
+1. Build the docker image
+
+```bash
+docker build . -t sup2srt
+```
+
+2. Mount your location to make it available to the container and shell into it.
+
+```bash
+docker run -v /Users/christopher/Movies/:/movies/ -ti --entrypoint /bin/bash localhost/sup2srt:latest
+```
+
+3. If you already have sup files generated using mkvextract do the `sup2srt` command
+
+```bash
+root@06f7be310582:/movies/movie-title# sup2srt eng.sup -l eng
+```
+
+4. If you don't
+
+```bash
+root@06f7be310582:/movies/moviefolder# sup2disk movie.mkv -t 4
+```
