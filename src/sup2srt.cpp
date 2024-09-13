@@ -25,7 +25,7 @@ void parseArgs(int argc, char** argv)
 	extern char *optarg;
 	extern int optind;
 	int o;
-	while ((o = getopt (argc, argv, "hTSl:ot:vV")) != -1)
+	while ((o = getopt (argc, argv, "hTSl:o:t:vV")) != -1)
 	{
 		switch(o)
 		{
