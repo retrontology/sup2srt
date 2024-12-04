@@ -8,7 +8,6 @@
 #include "pgsUtil.h"
 #include "pgsSegment.h"
 #include <iostream>
-#include <bits/stdc++.h>
 #include <fstream>
 
 unsigned long int pgsUtil::char4ToLong(char * ptr)
