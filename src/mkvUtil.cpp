@@ -1,8 +1,10 @@
+#include <fstream>
 #include "mkvUtil.h"
 #include "pgs/pgsUtil.h"
 #include <map>
 #include <utility>
 #include <iostream>
+#include <iomanip>
 #include <time.h> 
 
 std::map<std::string,std::string> isoMap::map

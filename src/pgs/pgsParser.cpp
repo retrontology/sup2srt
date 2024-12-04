@@ -4,8 +4,8 @@
  *  Created on: Nov 1, 2020
  *      Author: blazer
  */
+#include <iomanip>
 #include <fstream>
-#include <bits/stdc++.h>
 #include <string>
 #include <stdlib.h>
 #include <vector>

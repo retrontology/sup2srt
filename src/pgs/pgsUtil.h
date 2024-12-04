@@ -9,7 +9,6 @@
 #define PGSUTIL_H_
 
 #include "pgsSegment.h"
-#include <bits/stdc++.h>
 #include "objectDefinitionSegment.h"
 #include "paletteDefinitionSegment.h"
 
