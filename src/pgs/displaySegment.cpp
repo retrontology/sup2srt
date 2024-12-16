@@ -9,6 +9,7 @@
 #include <tiffio.hxx>
 #include <sstream>
 #include <iostream>
+#include <cstring>
 #include "displaySegment.h"
 #include "pgsUtil.h"
 
