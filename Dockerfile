@@ -1,29 +1,64 @@
-# Use an official base image.
 FROM ubuntu:latest AS builder
-
-# Set the working directory to /app.
 WORKDIR /app
 
-# Install dependencies needed for libtiff and tesseract.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg libssl-dev libpng-dev libtiff-dev libleptonica-dev gcc g++ cmake make \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ffmpeg \
+    libssl-dev \
+    libpng-dev \
+    libtiff-dev \
+    libleptonica-dev \
+    gcc \
+    g++ \
+    cmake \
+    make && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . /app
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends pkg-config libavutil-dev libavdevice-dev libavformat-dev libavcodec-dev libtesseract-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    pkg-config \
+    libavutil-dev \
+    libavdevice-dev \
+    libavformat-dev \
+    libavcodec-dev \
+    libtesseract-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN mkdir build
-RUN cd build && cmake .. && make -j 8 && make install
+RUN mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j8 && \
+    make install
 
 FROM ubuntu:latest
 
-COPY --from=builder /usr/local/bin/sup2srt /usr/local/bin/sup2srt
-COPY --from=builder /usr/local/bin/sup2disk /usr/local/bin/sup2disk
+WORKDIR /app
 
-# Install dependencies needed for libtiff and tesseract.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg libssl-dev libpng-dev libtiff-dev libleptonica-dev libavutil-dev libavdevice-dev libavformat-dev libavcodec-dev libtesseract-dev tesseract-ocr-eng \
-    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/local/bin/sup2srt /app/sup2srt
+COPY --from=builder /usr/local/bin/sup2disk /app/sup2disk
+
+ARG TESSERACT_LANGS="eng"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libtiff-dev \
+    libleptonica-dev \
+    libtiff6 \
+    libavcodec60 \
+    libavformat60 \
+    libavutil58 \
+    libtesseract5 \
+    $(echo $TESSERACT_LANGS | sed 's/\([^ ]\+\)/tesseract-ocr-\1/g') && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
+RUN mkdir -p /app && chown -R nonroot:nonroot /app
+USER nonroot
+
+COPY --chown=nonroot:nonroot entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD []
