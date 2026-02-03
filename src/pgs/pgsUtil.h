@@ -14,6 +14,7 @@
 
 namespace pgsUtil
 {
+	constexpr unsigned int PGS_TICKS_PER_SEC = 90000;
 	unsigned long int char4ToLong(char * ptr);
 	unsigned long int char3ToLong(char * ptr);
 	unsigned int char2ToInt(char * ptr);

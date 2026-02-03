@@ -1,7 +1,6 @@
-subs.sup
-subs2.sup
 sup2srt
-build
+build/
 .vscode/settings.json
-subs3.eng.srt
-subs3.sup
+*.srt
+*.sup
+sample/
