@@ -21,7 +21,7 @@ public:
 	unsigned int height;
 	std::string data;
 	objectDefinitionSegment();
-	objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data);
+	objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data, unsigned long segmentSize);
 	virtual ~objectDefinitionSegment();
 };
 
