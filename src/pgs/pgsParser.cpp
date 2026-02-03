@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <filesystem>
+#include <algorithm>
 #include "pgsUtil.h"
 #include "pgsParser.h"
 #include "pgsSegment.h"
@@ -181,6 +182,10 @@ paletteDefinitionSegment pgsParser::parsePDS(char * buffer, unsigned int segment
 
 objectDefinitionSegment pgsParser::parseODS(char * buffer, unsigned long segmentSize)
 {
+	if (segmentSize < 11)
+	{
+		return objectDefinitionSegment();
+	}
 	char * objectID = buffer;
 	char * objectVersionNumber = buffer + 2;
 	char * lastInSequenceFlag = buffer + 3;
@@ -188,7 +193,7 @@ objectDefinitionSegment pgsParser::parseODS(char * buffer, unsigned long segment
 	char * width = buffer + 7;
 	char * height = buffer + 9;
 	char * data = buffer + 11;
-	return objectDefinitionSegment(objectID, objectVersionNumber, lastInSequenceFlag, objectDataLength, width, height, data);
+	return objectDefinitionSegment(objectID, objectVersionNumber, lastInSequenceFlag, objectDataLength, width, height, data, segmentSize);
 }
 
 
@@ -209,6 +214,8 @@ void pgsParser::parseDisplaySegments()
 	std::vector<windowDefinitionSegment> wds;
 	std::vector<paletteDefinitionSegment> pds;
 	std::vector<objectDefinitionSegment> ods;
+	std::map<unsigned int, size_t> odsIndexById;
+	std::map<unsigned int, unsigned char> odsVersionById;
 	for(int i = 0; i < this->PGS_SEGMENTS.size(); i++)
 	{
 		switch(this->PGS_SEGMENTS[i]->HEADER.SEGMENT_TYPE)
@@ -220,6 +227,8 @@ void pgsParser::parseDisplaySegments()
 				wds.clear();
 				pds.clear();
 				ods.clear();
+				odsIndexById.clear();
+				odsVersionById.clear();
 				break;
 			}
 			case WDS :
@@ -237,7 +246,50 @@ void pgsParser::parseDisplaySegments()
 			case ODS :
 			{
 				objectDefinitionSegment* temp = dynamic_cast<objectDefinitionSegment*>(this->PGS_SEGMENTS[i].get());
-				ods.push_back(*temp);
+				if (temp != nullptr)
+				{
+					bool isLast = (temp->lastInSequenceFlag & 0x80) != 0;
+					auto indexIt = odsIndexById.find(temp->objectID);
+					auto versionIt = odsVersionById.find(temp->objectID);
+					bool canAppend = indexIt != odsIndexById.end() &&
+						versionIt != odsVersionById.end() &&
+						versionIt->second == temp->objectVersionNumber;
+
+					if (canAppend)
+					{
+						objectDefinitionSegment & existing = ods[indexIt->second];
+						if (existing.objectDataLength == 0 && temp->objectDataLength > 0)
+						{
+							existing.objectDataLength = temp->objectDataLength;
+						}
+						if (existing.width == 0 && temp->width > 0) { existing.width = temp->width; }
+						if (existing.height == 0 && temp->height > 0) { existing.height = temp->height; }
+
+						if (existing.objectDataLength > existing.data.size() && !temp->data.empty())
+						{
+							unsigned long remaining = existing.objectDataLength - static_cast<unsigned long>(existing.data.size());
+							size_t appendCount = std::min(static_cast<size_t>(remaining), temp->data.size());
+							existing.data.append(temp->data.substr(0, appendCount));
+						}
+
+						if (isLast || (existing.objectDataLength > 0 && existing.data.size() >= existing.objectDataLength))
+						{
+							odsIndexById.erase(temp->objectID);
+							odsVersionById.erase(temp->objectID);
+						}
+					}
+					else
+					{
+						ods.push_back(*temp);
+						odsIndexById[temp->objectID] = ods.size() - 1;
+						odsVersionById[temp->objectID] = temp->objectVersionNumber;
+						if (isLast || (temp->objectDataLength > 0 && temp->data.size() >= temp->objectDataLength))
+						{
+							odsIndexById.erase(temp->objectID);
+							odsVersionById.erase(temp->objectID);
+						}
+					}
+				}
 				break;
 			}
 			case END :
@@ -245,6 +297,13 @@ void pgsParser::parseDisplaySegments()
 				ds.wds = wds;
 				ds.pds = pds;
 				ds.ods = ods;
+				for (int j = 0; j < ds.ods.size(); j++)
+				{
+					if (ds.ods[j].objectDataLength > ds.ods[j].data.size())
+					{
+						ds.ods[j].objectDataLength = ds.ods[j].data.size();
+					}
+				}
 				ds.end = *this->PGS_SEGMENTS[i].get();
 				this->displaySegments.push_back(ds);
 				break;

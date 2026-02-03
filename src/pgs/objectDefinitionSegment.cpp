@@ -20,14 +20,32 @@ objectDefinitionSegment::objectDefinitionSegment()
 	this->data = nullptr;
 }
 
-objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data)
+objectDefinitionSegment::objectDefinitionSegment(char * objectID, char * objectVersionNumber, char * lastInSequenceFlag, char * objectDataLength, char * width, char * height, char * data, unsigned long segmentSize)
 {
+	if (segmentSize < 11)
+	{
+		this->objectID = 0;
+		this->objectVersionNumber = 0;
+		this->lastInSequenceFlag = 0;
+		this->objectDataLength = 0;
+		this->width = 0;
+		this->height = 0;
+		this->data = std::string();
+		return;
+	}
+
 	this->objectID = pgsUtil::char2ToInt(objectID);
 	this->objectVersionNumber = pgsUtil::cleanChar(objectVersionNumber[0]);
 	this->lastInSequenceFlag = pgsUtil::cleanChar(lastInSequenceFlag[0]);
 	this->objectDataLength = pgsUtil::char3ToLong(objectDataLength);
 	this->width = pgsUtil::char2ToInt(width);
 	this->height = pgsUtil::char2ToInt(height);
+
+	unsigned long availableDataLength = segmentSize - 11;
+	if (this->objectDataLength > availableDataLength)
+	{
+		this->objectDataLength = availableDataLength;
+	}
 	this->data = std::string(data, this->objectDataLength);
 }
 
