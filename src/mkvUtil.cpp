@@ -113,7 +113,7 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
 			title += entry == NULL ? language : entry->value;
 			offset = mkvFile->streams[tracks[i]]->start_time;
-			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * pgsUtil::PGS_TICKS_PER_MS;
+			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * (pgsUtil::PGS_TICKS_PER_SEC / 1000);
 			time_base.den = mkvFile->streams[tracks[i]]->time_base.den;
 			streams.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, offset, time_base)));
 		}
@@ -136,7 +136,7 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 				time(&now);
 				if (now - last_time >= 1)
 				{
-					std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - streams[packet->stream_index].offset) * (streams[packet->stream_index].time_base.num / pgsUtil::PGS_TICKS_PER_MS) * 1000 / streams[packet->stream_index].time_base.den);
+					std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - streams[packet->stream_index].offset) * (streams[packet->stream_index].time_base.num / (pgsUtil::PGS_TICKS_PER_SEC / 1000)) * 1000 / streams[packet->stream_index].time_base.den);
 					std::cout.flush();
 					last_time = now;
 				}
@@ -191,7 +191,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 			if(language.compare("") != 0) outname += language + ".sup";
 			else outname += "sup";
 			streams.insert(std::pair<unsigned int, std::ofstream>(tracks[i], std::ofstream(outname, std::ofstream::binary)));
-			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * pgsUtil::PGS_TICKS_PER_MS;
+			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * (pgsUtil::PGS_TICKS_PER_SEC / 1000);
 			time_base.den = mkvFile->streams[tracks[i]]->time_base.den;
 			stream_info.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, offset, time_base)));
 		}
@@ -210,7 +210,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 			time(&now);
 			if (now - last_time >= 1)
 			{
-				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - stream_info[packet->stream_index].offset) * (stream_info[packet->stream_index].time_base.num / pgsUtil::PGS_TICKS_PER_MS) * 1000 / stream_info[packet->stream_index].time_base.den);
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - stream_info[packet->stream_index].offset) * (stream_info[packet->stream_index].time_base.num / (pgsUtil::PGS_TICKS_PER_SEC / 1000)) * 1000 / stream_info[packet->stream_index].time_base.den);
 				std::cout.flush();
 				last_time = now;
 			}

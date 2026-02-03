@@ -40,11 +40,11 @@ void srtUtil::pgsToSRTFile(pgsParser * pgs, const char* output, const char* lang
 	{
 		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
 		{
-			double startMs = pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
-			double endMs = pgs->displaySegments[i].end.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
+			double startMs = pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
+			double endMs = pgs->displaySegments[i].end.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
 			if (endMs <= startMs && (i + 1) < pgs->displaySegments.size())
 			{
-				endMs = pgs->displaySegments[i + 1].pcs.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
+				endMs = pgs->displaySegments[i + 1].pcs.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
 			}
 			if (endMs <= startMs)
 			{
@@ -151,11 +151,11 @@ std::ostringstream srtUtil::pgsToSRTStream(pgsParser * pgs, const char* language
 	{
 		if(pgs->displaySegments[i].ods.size()==1 && pgs->displaySegments[i].pds.size()==1)
 		{
-			double startMs = pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
-			double endMs = pgs->displaySegments[i].end.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
+			double startMs = pgs->displaySegments[i].pcs.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
+			double endMs = pgs->displaySegments[i].end.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
 			if (endMs <= startMs && (i + 1) < pgs->displaySegments.size())
 			{
-				endMs = pgs->displaySegments[i + 1].pcs.HEADER.PRESENTATION_TIMESTAMP / static_cast<double>(pgsUtil::PGS_TICKS_PER_MS);
+				endMs = pgs->displaySegments[i + 1].pcs.HEADER.PRESENTATION_TIMESTAMP * 1000.0 / static_cast<double>(pgsUtil::PGS_TICKS_PER_SEC);
 			}
 			if (endMs <= startMs)
 			{

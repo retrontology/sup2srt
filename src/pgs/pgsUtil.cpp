@@ -32,7 +32,7 @@ unsigned char pgsUtil::cleanChar(char in)
 
 double pgsUtil::ptsToMilli(unsigned long in)
 {
-	return static_cast<double>(in) / static_cast<double>(PGS_TICKS_PER_MS);
+	return static_cast<double>(in) * 1000.0 / static_cast<double>(PGS_TICKS_PER_SEC);
 }
 
 void pgsUtil::decodeRLE(unsigned long ** pixels, paletteDefinitionSegment pds, objectDefinitionSegment ods, bool gray)
