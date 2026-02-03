@@ -98,7 +98,6 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
-	u_int32_t base_offset = mkvFile->streams[0]->start_time;
 	for(int i = 0; i < tracks.size(); i++)
 	{
 		if(mkvFile->streams[tracks[i]]->codecpar->codec_id == AV_CODEC_ID_HDMV_PGS_SUBTITLE)
@@ -113,10 +112,10 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 			else language = mkvUtil::cleanLangISO(std::string(entry->value));
 			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "title", entry, AV_DICT_IGNORE_SUFFIX);
 			title += entry == NULL ? language : entry->value;
-			//offset = mkvFile->streams[tracks[i]]->start_time;
-			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * 90;
+			offset = mkvFile->streams[tracks[i]]->start_time;
+			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * pgsUtil::PGS_TICKS_PER_MS;
 			time_base.den = mkvFile->streams[tracks[i]]->time_base.den;
-			streams.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, base_offset, time_base)));
+			streams.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, offset, time_base)));
 		}
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
@@ -137,7 +136,7 @@ std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::v
 				time(&now);
 				if (now - last_time >= 1)
 				{
-					std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - streams[packet->stream_index].offset) * (streams[packet->stream_index].time_base.num / 90) * 1000 / streams[packet->stream_index].time_base.den);
+					std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - streams[packet->stream_index].offset) * (streams[packet->stream_index].time_base.num / pgsUtil::PGS_TICKS_PER_MS) * 1000 / streams[packet->stream_index].time_base.den);
 					std::cout.flush();
 					last_time = now;
 				}
@@ -169,6 +168,7 @@ void mkvUtil::dumpAllMKVsup(std::string filename)
 void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
 {
 	std::map<unsigned int, std::ofstream> streams;
+	std::map<unsigned int, supStream> stream_info;
 	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
@@ -180,6 +180,8 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 			AVDictionaryEntry* entry = NULL;
 			std::string title;
 			std::string language;
+			u_int32_t offset = mkvFile->streams[tracks[i]]->start_time;
+			AVRational time_base;
 			entry = av_dict_get(mkvFile->streams[tracks[i]]->metadata, "language", entry, AV_DICT_IGNORE_SUFFIX);
 			if(entry == NULL) std::cerr << "Did not find language for track " + std::to_string(tracks[i]) << std::endl;
 			else language = mkvUtil::cleanLangISO(std::string(entry->value));
@@ -189,6 +191,9 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 			if(language.compare("") != 0) outname += language + ".sup";
 			else outname += "sup";
 			streams.insert(std::pair<unsigned int, std::ofstream>(tracks[i], std::ofstream(outname, std::ofstream::binary)));
+			time_base.num = mkvFile->streams[tracks[i]]->time_base.num * pgsUtil::PGS_TICKS_PER_MS;
+			time_base.den = mkvFile->streams[tracks[i]]->time_base.den;
+			stream_info.insert(std::pair<unsigned int, supStream>(tracks[i], supStream(tracks[i], language, title, offset, time_base)));
 		}
 		else std::cerr << "Track " + std::to_string(tracks[i]) + " is not a PGS stream!" << std::endl;
 	}
@@ -201,11 +206,11 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 		unsigned int num = packet->stream_index;
 		if (streams.find(num) != streams.end())
 		{
-			streams[packet->stream_index] << mkvUtil::formatPacket(packet, mkvFile->streams[0]->start_time, mkvFile->streams[0]->time_base);
+			streams[packet->stream_index] << mkvUtil::formatPacket(packet, stream_info[packet->stream_index]);
 			time(&now);
 			if (now - last_time >= 1)
 			{
-				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - mkvFile->streams[0]->start_time) * mkvFile->streams[0]->time_base.num * 1000 / mkvFile->streams[0]->time_base.den);
+				std::cout << "\rParsing mkv at: " + mkvUtil::milliToString((packet->pts - stream_info[packet->stream_index].offset) * (stream_info[packet->stream_index].time_base.num / pgsUtil::PGS_TICKS_PER_MS) * 1000 / stream_info[packet->stream_index].time_base.den);
 				std::cout.flush();
 				last_time = now;
 			}
