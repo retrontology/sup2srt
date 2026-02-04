@@ -1,6 +1,9 @@
 # sup2srt
 Convert SUP graphic subtitles to text-based SRT format with Tesseract.
 
+## Disclaimer
+Note: Code changes after the 1.0.6 release have been AI-assisted.
+
 ## Requirements
 - libtiff
 - libtiffxx
@@ -59,30 +62,40 @@ usage: sup2disk [-hv] [-t track] input
 ## Docker Usage
 
 ### Requirements
+Install docker, podman or containerd.
 
-Install docker, podman or containerd
-
-
-1. Build the docker image
-
+### Build the image
 ```bash
-docker build . -t sup2srt
+docker build -t sup2srt .
 ```
 
-2. Mount your location to make it available to the container and shell into it.
-
+Optional: include additional Tesseract languages at build time:
 ```bash
-docker run -v /Users/christopher/Movies/:/movies/ -ti --entrypoint /bin/bash localhost/sup2srt:latest
+docker build --build-arg TESSERACT_LANGS="eng spa deu" -t sup2srt .
+```
+Language codes: https://github.com/tesseract-ocr/tessdata
+
+### Run `sup2srt`
+The entrypoint runs `sup2srt` by default, so you can pass its arguments directly.
+```bash
+docker run --rm -v /path/to/media:/media sup2srt /media/movie-title/eng.sup -l eng
 ```
 
-3. If you already have sup files generated using mkvextract do the `sup2srt` command
-
+### Run `sup2disk`
+If the first argument is `sup2disk`, the entrypoint runs that instead.
 ```bash
-root@06f7be310582:/movies/movie-title# sup2srt eng.sup -l eng
+docker run --rm -v /path/to/media:/media sup2srt sup2disk /media/moviefolder/movie.mkv -t 4
 ```
 
-4. If you don't
-
+### Optional: match host file ownership
+By default the container runs as UID:GID 1000:1000. If you need files on a bind
+mount to be owned by your host user, run with:
 ```bash
-root@06f7be310582:/movies/moviefolder# sup2disk movie.mkv -t 4
+docker run --user $(id -u):$(id -g) -v /path/to/media:/media sup2srt /media/movie-title/eng.sup -l eng
+```
+
+### Debug shell
+Use `--entrypoint /bin/bash` to bypass the entrypoint.
+```bash
+docker run -it --entrypoint /bin/bash -v /path/to/media:/media sup2srt
 ```
