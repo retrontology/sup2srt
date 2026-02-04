@@ -53,11 +53,10 @@ RUN apt-get update && \
     $(echo $TESSERACT_LANGS | sed 's/\([^ ]\+\)/tesseract-ocr-\1/g') && \
     rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
-RUN mkdir -p /app && chown -R nonroot:nonroot /app
-USER nonroot
+RUN mkdir -p /app && chown -R ubuntu:ubuntu /app
+USER ubuntu
 
-COPY --chown=nonroot:nonroot entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY --chown=ubuntu:ubuntu entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
