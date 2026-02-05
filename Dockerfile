@@ -54,10 +54,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /app && chown -R ubuntu:ubuntu /app
-USER ubuntu
 
 COPY --chown=ubuntu:ubuntu entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+USER ubuntu
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD []
