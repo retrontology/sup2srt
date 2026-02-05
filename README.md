@@ -73,6 +73,7 @@ Optional: include additional Tesseract languages at build time:
 ```bash
 docker build --build-arg TESSERACT_LANGS="eng spa deu" -t sup2srt .
 ```
+To install all Tesseract languages, use `TESSERACT_LANGS="all"`.
 Language codes: https://github.com/tesseract-ocr/tessdata
 
 ### Run `sup2srt`
