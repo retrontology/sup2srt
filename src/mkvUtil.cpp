@@ -6,6 +6,24 @@
 #include <iostream>
 #include <iomanip>
 #include <time.h> 
+extern "C"
+{
+#include <libavutil/log.h>
+}
+
+namespace
+{
+	void configureAvLogging()
+	{
+		static bool configured = false;
+		if (configured)
+		{
+			return;
+		}
+		av_log_set_level(AV_LOG_ERROR);
+		configured = true;
+	}
+}
 
 std::map<std::string,std::string> isoMap::map
 {
@@ -28,7 +46,8 @@ std::map<std::string,std::string> isoMap::map
 	{"rum", "ron"},
 	{"slo", "slk"},
 	{"alb", "sqi"},
-	{"chi", "chi_sim"}
+	{"chi", "chi_sim"},
+	{"nob", "nor"}
 };
 
 supStream::supStream()
@@ -65,6 +84,7 @@ void mkvUtil::tsToChar4(char * buffer, u_int32_t ts)
 std::vector<unsigned int> mkvUtil::findAllPGSTracks(std::string filename)
 {
 	std::vector<unsigned int> tracks;
+	configureAvLogging();
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
@@ -95,6 +115,7 @@ std::vector<supStream> mkvUtil::extractAllMKVsup(std::string filename)
 std::vector<supStream> mkvUtil::extractSelectMKVsup(std::string filename, std::vector<unsigned int> tracks)
 {
 	std::map<unsigned int, supStream> streams;
+	configureAvLogging();
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
@@ -170,6 +191,7 @@ void mkvUtil::dumpSelectMKVsup(std::string filename, std::vector<unsigned int> t
 	std::map<unsigned int, std::ofstream> streams;
 	std::map<unsigned int, supStream> stream_info;
 	std::string basename = filename.substr(0, filename.find_last_of('.') + 1);
+	configureAvLogging();
 	AVFormatContext * mkvFile = avformat_alloc_context();
 	avformat_open_input(&mkvFile, filename.c_str(), NULL, NULL);
 	avformat_find_stream_info(mkvFile,  NULL);
