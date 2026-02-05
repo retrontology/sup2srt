@@ -1,0 +1,143 @@
+name: Release Assets
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-and-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x86_64
+            runs-on: ubuntu-latest
+            bin_ext: ""
+          - platform: linux-arm64
+            runs-on: ubuntu-24.04-arm64
+            bin_ext: ""
+          - platform: macos
+            runs-on: macos-latest
+            bin_ext: ""
+          - platform: windows-x86_64
+            runs-on: windows-latest
+            bin_ext: ".exe"
+            use_msys2: true
+
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSYS2 (Windows)
+        if: matrix.use_msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-pkg-config
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-leptonica
+            mingw-w64-x86_64-tesseract-ocr
+            mingw-w64-x86_64-libtiff
+
+      - name: Install dependencies (Linux)
+        if: startsWith(matrix.platform, 'linux-')
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg libssl-dev libpng-dev libtiff-dev libleptonica-dev pkg-config libavutil-dev libavdevice-dev libavformat-dev libavcodec-dev libtesseract-dev
+
+      - name: Install dependencies (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          brew update
+          brew install tesseract leptonica libtiff ffmpeg pkg-config
+
+      - name: Configure CMake (Windows)
+        if: matrix.platform == 'windows-x86_64'
+        shell: msys2 {0}
+        run: cmake -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Configure CMake
+        if: matrix.platform != 'windows-x86_64'
+        run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+      - name: Build (Windows)
+        if: matrix.platform == 'windows-x86_64'
+        shell: msys2 {0}
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
+
+      - name: Build
+        if: matrix.platform != 'windows-x86_64'
+        run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
+
+      - name: Package assets (Windows)
+        if: matrix.platform == 'windows-x86_64'
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          ASSET_ROOT="dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}"
+          mkdir -p "${ASSET_ROOT}/bin" "${ASSET_ROOT}/lib"
+          cp "build/src/sup2srt${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          cp "build/src/sup2disk${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          if ls build/src/pgs/libpgs.* >/dev/null 2>&1; then
+            cp build/src/pgs/libpgs.* "${ASSET_ROOT}/lib/"
+          fi
+          tar -czf "${ASSET_ROOT}.tar.gz" -C dist "$(basename "${ASSET_ROOT}")"
+          sha256sum "${ASSET_ROOT}.tar.gz" > "${ASSET_ROOT}.tar.gz.sha256"
+
+      - name: Package assets (Linux)
+        if: startsWith(matrix.platform, 'linux-')
+        run: |
+          set -euo pipefail
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          ASSET_ROOT="dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}"
+          mkdir -p "${ASSET_ROOT}/bin" "${ASSET_ROOT}/lib"
+          cp "build/src/sup2srt${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          cp "build/src/sup2disk${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          if ls build/src/pgs/libpgs.* >/dev/null 2>&1; then
+            cp build/src/pgs/libpgs.* "${ASSET_ROOT}/lib/"
+          fi
+          tar -czf "${ASSET_ROOT}.tar.gz" -C dist "$(basename "${ASSET_ROOT}")"
+          sha256sum "${ASSET_ROOT}.tar.gz" > "${ASSET_ROOT}.tar.gz.sha256"
+
+      - name: Package assets (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          set -euo pipefail
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          ASSET_ROOT="dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}"
+          mkdir -p "${ASSET_ROOT}/bin" "${ASSET_ROOT}/lib"
+          cp "build/src/sup2srt${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          cp "build/src/sup2disk${{ matrix.bin_ext }}" "${ASSET_ROOT}/bin/"
+          if ls build/src/pgs/libpgs.* >/dev/null 2>&1; then
+            cp build/src/pgs/libpgs.* "${ASSET_ROOT}/lib/"
+          fi
+          tar -czf "${ASSET_ROOT}.tar.gz" -C dist "$(basename "${ASSET_ROOT}")"
+          shasum -a 256 "${ASSET_ROOT}.tar.gz" > "${ASSET_ROOT}.tar.gz.sha256"
+
+      - name: Upload release assets (Windows)
+        if: matrix.platform == 'windows-x86_64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          gh release upload "${TAG_NAME}" "dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}.tar.gz" "dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}.tar.gz.sha256" --clobber
+
+      - name: Upload release assets
+        if: matrix.platform != 'windows-x86_64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          gh release upload "${TAG_NAME}" "dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}.tar.gz" "dist/sup2srt-${TAG_NAME}-${{ matrix.platform }}.tar.gz.sha256" --clobber
