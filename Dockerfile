@@ -1,4 +1,4 @@
-FROM ubuntu:latest AS builder
+FROM ubuntu:26.04 AS builder
 WORKDIR /app
 
 RUN apt-get update && \
@@ -32,7 +32,7 @@ RUN mkdir build && \
     make -j8 && \
     make install
 
-FROM ubuntu:latest
+FROM ubuntu:26.04
 
 WORKDIR /app
 
@@ -43,14 +43,14 @@ ARG TESSERACT_LANGS="eng"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libtiff-dev \
-    libleptonica-dev \
     libtiff6 \
-    libavcodec60 \
-    libavformat60 \
-    libavutil58 \
+    libtiffxx6 \
+    libleptonica6 \
+    libavcodec62 \
+    libavformat62 \
+    libavutil60 \
     libtesseract5 \
-    $(echo $TESSERACT_LANGS | sed 's/\([^ ]\+\)/tesseract-ocr-\1/g') && \
+    $(echo "$TESSERACT_LANGS" | sed 's/\([^ ]\+\)/tesseract-ocr-\1/g') && \
     rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /app && chown -R ubuntu:ubuntu /app
